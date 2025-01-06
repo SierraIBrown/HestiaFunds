@@ -32,6 +32,16 @@ public class TransactionController {
     }
 
     /*
+    Get a transaction by id
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getTransactionById(@PathVariable Long id){
+        return transactionRepository.findById(id)
+                .map(tx -> ResponseEntity.ok().body(tx))
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    /*
     Create a new transaction
      */
     @PostMapping

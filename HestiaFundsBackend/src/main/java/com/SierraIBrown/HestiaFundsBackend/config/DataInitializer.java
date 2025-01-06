@@ -29,6 +29,7 @@ public class DataInitializer {
                     new Category("Personal"),
                     new Category("Rent/Mortgage"),
                     new Category("Student Loans"),
+                    new Category("Subscriptions"),
                     new Category("Utilties")
             );
 
