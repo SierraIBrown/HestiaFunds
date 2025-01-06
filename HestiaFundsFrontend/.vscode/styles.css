@@ -1,7 +1,7 @@
 body{
     font-family: "Nunito", sans-serif;
     margin: 0;
-    paddings: 0;
+    padding: 0;
     background-color: #f7f1e5;
     color: #3b2f2f
 }
@@ -32,7 +32,7 @@ body{
     top: -20px;
     left: 50%;
     transform: translateX(-50%);
-    width: auto;
+    width: 40%;
     height: auto;
     z-index: -1;
 }
@@ -64,7 +64,7 @@ footer{
 #sidebar{
     position: fixed;
     right: 0;
-    top: 60px;
+    top: 100px;
     width: 180px;
     height: 100vh;
     background-color: #ead6bf;
@@ -103,4 +103,50 @@ main section{
 main h2{
     margin-top: 0;
     color: #3b2f2f;
+}
+/* Transactions Table */
+#transactions-table table{
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+#transactions-table th,
+#transactions-table td{
+    border: 1px solid #ddd;
+    padding: 0.75rem;
+    text-align: left;
+}
+#transactions-table th{
+    background-color: #d4b483;
+    color: #fff;
+}
+#transactions-table tbody tr:nth-child(even){
+    background-color: #f9f9f9;
+}
+/* Add Transaction Form */
+#add-transaction-form{
+    margin-top: 2rem;
+}
+#add-transaction-form label{
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+}
+#add-transaction-form input,
+#add-transaction-form select{
+    width: 95%;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+#add-transaction-form button{
+    background-color: #d4b483;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+}
+#add-transaction-form button:hover{
+    background-color: #c49d62;
 }
