@@ -8,8 +8,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -46,5 +45,31 @@ public class CategoryControllerTest {
                 .contentType("application/json")
                 .content(objectMapper.writeValueAsString(newCategory)))
                 .andExpect(status().isCreated());
+    }
+
+    /*
+    Tests updating/editing an existing category
+     */
+    @Test
+    void testUpdateCategory() throws Exception{
+        Category category = new Category();
+        category.setId(1L);
+        category.setName("Updated Category Name");
+
+        mockMvc.perform(put("/api/categories/{id}", 1L)
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(category)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Updated Category Name"));
+    }
+
+    /*
+    Tests deleting an existing category
+     */
+    @Test
+    void testDeleteCategory() throws Exception{
+        mockMvc.perform(delete("/api/categories/{id}", 1L))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Category deleted successfully"));
     }
 }

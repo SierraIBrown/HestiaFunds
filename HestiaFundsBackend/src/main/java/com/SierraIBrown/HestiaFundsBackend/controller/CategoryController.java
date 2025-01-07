@@ -33,4 +33,27 @@ public class CategoryController {
         Category saved = categoryRepository.save(categoryRequest);
         return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
+
+    //PUT an existing category
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateCategory(@PathVariable Long id, @RequestBody Category categoryRequest){
+        //Check if it exists
+        return categoryRepository.findById(id).map(category -> {
+            if(categoryRequest.getName() == null || categoryRequest.getName().trim().isEmpty()){
+                return ResponseEntity.badRequest().body("Category name cannot be empty");
+            }
+            category.setName(categoryRequest.getName());
+            Category updatedCategory = categoryRepository.save(category);
+            return ResponseEntity.ok(updatedCategory);
+        }).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Category not found"));
+    }
+
+    //DELETE an existing category
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteCategory(@PathVariable Long id){
+        return categoryRepository.findById(id).map(category -> {
+            categoryRepository.delete(category);
+            return ResponseEntity.ok().body("Category deleted successfully");
+        }).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Category not found"));
+    }
 }
