@@ -1,17 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <meta charset="UTF-8"/>
-        <title>Hestia Funds</title>
-        <link 
-            href="https://fonts.googleapis.com/css2?fmily=Nunito:wght@400;600;700&display=swap"    
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Categories - Hestia Funds</title>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap"
             rel="stylesheet"
         />
         <link
             href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Noto+Serif:wght@400;700&display=swap"
             rel="stylesheet"
         />
-        <link rel="stylesheet" href="../styles.css"/>
+        <link rel="stylesheet" href="../styles.css">
+        <script src="../js/categories.js" defer></script>
     </head>
     <body>
         <header>
@@ -27,30 +29,30 @@
                 <li><a href="index.html">Home</a></li>
                 <li><a href="transactions.html">Transactions</a></li>
                 <li><a href="#">Stats</a></li>
-                <li><a href="categories.html">Categories</a></li>
+                <li><a href="#">Categories</a></li>
                 <li><a href="#">About Me</a></li>
             </ul>
         </nav>
 
         <main>
-            <section>
-                <h2>Welcome to Hestia Funds!</h2>
-                <p>
-                    Hestia Funds is a budgeting and spending planner application inspired by
-                    the Greek goddess of hearth and home. My mission is to help you track your
-                    finances, visualize your expenses, and set meaningful savings goals.
-                </p>
-                <p>
-                    Use the navigation on the right to explore transactions, view stats and charts,
-                    and manage your categories. Let's get started on your journey to
-                    financial wellness!
-                </p>
+            <h2>Categories</h2>
+            <section id="categories-list">
+                <h3>Existing Categories</h3>
+                <ul id="categories-container"></ul>
+            </section>
+
+            <section id="add-category-form">
+                <h3>Add a New Category</h3>
+                <form id="category-form">
+                    <label for="name">Category Name:</label>
+                    <input type="text" id="name" name="name" required>
+                    <button type="submit">Add Category</button>
+                </form>
             </section>
         </main>
 
         <footer>
             <p>&copy; 2025 Hestia Funds. All rights reserved.</p>
         </footer>
-        <script src="app.js"></script>
     </body>
 </html>
