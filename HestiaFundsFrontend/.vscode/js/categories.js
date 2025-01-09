@@ -104,7 +104,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         try{
-            const response = await fetch(`${API_BASE_URL}/categories/{id}`, {
+            const response = await fetch(`${API_BASE_URL}/categories/${id}`, {
                 method: "DELETE",
             });
 
