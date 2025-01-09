@@ -50,7 +50,6 @@ public class TransactionController {
         List<Transaction> transactions = transactionRepository.findByMonthAndYear(month, year);
         return ResponseEntity.ok(transactions);
     }
-    )
 
     /*
     Create a new transaction

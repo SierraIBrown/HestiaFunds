@@ -4,6 +4,7 @@ import com.SierraIBrown.HestiaFundsBackend.model.Category;
 import com.SierraIBrown.HestiaFundsBackend.model.Transaction;
 import com.SierraIBrown.HestiaFundsBackend.model.TransactionTest;
 import com.SierraIBrown.HestiaFundsBackend.repository.CategoryRepository;
+import com.SierraIBrown.HestiaFundsBackend.repository.TransactionRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,19 +37,28 @@ public class TransactionControllerTest {
     private CategoryRepository categoryRepository;
 
     @Autowired
+    private TransactionRepository transactionRepository;
+
+    @Autowired
     private ObjectMapper objectMapper;
 
     private Category savedCategory;
 
+    private Category cat;
+
     @BeforeEach
     void setUp(){
         categoryRepository.deleteAll();
+        transactionRepository.deleteAll();
 
         //Create valid category to use in tests
-        Category cat = new Category("Test Category", false);
+        cat = new Category("Test Category", false);
         savedCategory = categoryRepository.save(cat);
     }
 
+    /*
+    Tests getting all transactions when it is initially empty
+     */
     @Test
     void testGetAllTransactions_InitiallyEmpty() throws Exception{
         //Expect an empty array since nothing has been created
@@ -57,6 +67,41 @@ public class TransactionControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.length()").value(0));
 
+    }
+
+    /*
+    Tests getting all transactions in a single month
+     */
+    @Test
+    void testGetTransactionsByMonthAndYear() throws Exception{
+
+        Transaction transaction1 = new Transaction();
+        transaction1.setDate(LocalDate.of(2025, 1, 10));
+        transaction1.setAmount(BigDecimal.valueOf(100.00));
+        transaction1.setDescription("Walmart");
+        transaction1.setCategory(cat);
+
+        Transaction transaction2 = new Transaction();
+        transaction2.setDate(LocalDate.of(2025, 1, 15));
+        transaction2.setAmount(BigDecimal.valueOf(50.00));
+        transaction2.setDescription("Gas Station");
+        transaction2.setCategory(cat);
+
+        transactionRepository.save(transaction1);
+        transactionRepository.save(transaction2);
+
+        mockMvc.perform(get("/api/transactions/month/1/year/2025")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()").value(2))
+                .andExpect(jsonPath("$[0].date").value("2025-01-10"))
+                .andExpect(jsonPath("$[0].amount").value(100.0))
+                .andExpect(jsonPath("$[0].description").value("Walmart"))
+                .andExpect(jsonPath("$[0].category.name").value("Test Category"))
+                .andExpect(jsonPath("$[1].date").value("2025-01-15"))
+                .andExpect(jsonPath("$[1].amount").value(50.0))
+                .andExpect(jsonPath("$[1].description").value("Gas Station"))
+                .andExpect(jsonPath("$[1].category.name").value("Test Category"));
     }
 
     @Test
