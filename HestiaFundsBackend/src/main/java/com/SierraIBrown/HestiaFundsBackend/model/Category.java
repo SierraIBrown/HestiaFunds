@@ -20,7 +20,10 @@ public class Category {
 
     public Category(){}
 
-    public Category(String name){this.name = name;}
+    public Category(String name, boolean preloaded){
+        this.name = name;
+        this.preloaded = preloaded;
+    }
 
     //Getters
     public Long getId(){return id;}

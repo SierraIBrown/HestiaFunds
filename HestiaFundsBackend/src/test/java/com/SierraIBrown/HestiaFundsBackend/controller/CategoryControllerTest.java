@@ -72,4 +72,30 @@ public class CategoryControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string("Category deleted successfully"));
     }
+
+    /*
+    Tests if it rejects editing a default category
+     */
+    @Test
+    void testEditDefaultCategory() throws Exception{
+        Long defaultCategoryId = 1L;
+
+        mockMvc.perform(put("/api/categories/" + defaultCategoryId)
+                .contentType("application/json")
+                .content("{\"name\" : \"Updated Name\"}"))
+                .andExpect(status().isForbidden())
+                .andExpect(content().string("Cannot edit default categories."));
+    }
+
+    /*
+    Tests if it rejects deleting a default category
+     */
+    @Test
+    void testDeleteDefaultCategory() throws Exception{
+        Long defaultCategoryId = 1L;
+
+        mockMvc.perform(delete("/api/categories/" + defaultCategoryId))
+                .andExpect(status().isForbidden())
+                .andExpect(content().string("Cannot delete default categories."));
+    }
 }

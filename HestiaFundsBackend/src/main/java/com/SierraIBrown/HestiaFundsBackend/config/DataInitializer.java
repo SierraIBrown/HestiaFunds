@@ -21,16 +21,16 @@ public class DataInitializer {
         long categoryCount = categoryRepository.count();
         if(categoryCount == 0){
             List<Category> defaultCategories = Arrays.asList(
-                    new Category("Car Loans"),
-                    new Category("Credit Card Bills"),
-                    new Category("Gas"),
-                    new Category("Groceries"),
-                    new Category("Entertainment"),
-                    new Category("Personal"),
-                    new Category("Rent/Mortgage"),
-                    new Category("Student Loans"),
-                    new Category("Subscriptions"),
-                    new Category("Utilties")
+                    new Category("Car Loans", true),
+                    new Category("Credit Card Bills", true),
+                    new Category("Gas", true),
+                    new Category("Groceries", true),
+                    new Category("Entertainment", true),
+                    new Category("Personal", true),
+                    new Category("Rent/Mortgage", true),
+                    new Category("Student Loans", true),
+                    new Category("Subscriptions", true),
+                    new Category("Utilties", true)
             );
 
             categoryRepository.saveAll(defaultCategories);

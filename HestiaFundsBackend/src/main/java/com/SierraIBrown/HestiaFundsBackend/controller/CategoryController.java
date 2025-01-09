@@ -39,6 +39,9 @@ public class CategoryController {
     public ResponseEntity<?> updateCategory(@PathVariable Long id, @RequestBody Category categoryRequest){
         //Check if it exists
         return categoryRepository.findById(id).map(category -> {
+            if(category.isPreloaded()){
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Cannot edit default categories.");
+            }
             if(categoryRequest.getName() == null || categoryRequest.getName().trim().isEmpty()){
                 return ResponseEntity.badRequest().body("Category name cannot be empty");
             }
@@ -52,6 +55,9 @@ public class CategoryController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteCategory(@PathVariable Long id){
         return categoryRepository.findById(id).map(category -> {
+            if(category.isPreloaded()){
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Cannot delete default categories.");
+            }
             categoryRepository.delete(category);
             return ResponseEntity.ok().body("Category deleted successfully");
         }).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Category not found"));

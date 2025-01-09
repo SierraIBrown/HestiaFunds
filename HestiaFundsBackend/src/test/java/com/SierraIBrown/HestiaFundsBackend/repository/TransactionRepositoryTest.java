@@ -35,7 +35,7 @@ public class TransactionRepositoryTest {
     @DisplayName("Should save and retrieve a Transaction with a Category")
     void testSaveAndFindTransaction(){
         //Create and save a Category
-        Category cat = new Category("Subscriptions");
+        Category cat = new Category("Subscriptions", false);
         Category savedCat = categoryRepository.save(cat);
 
         //Create a transaction referencing the Category
@@ -61,7 +61,7 @@ public class TransactionRepositoryTest {
     @Test
     @DisplayName("Should update a Transaction's amount")
     void testUpdateTransaction(){
-        Category cat = new Category("Entertainment");
+        Category cat = new Category("Entertainment", false);
         Category savedCat = categoryRepository.save(cat);
 
         //Create transaction
@@ -84,7 +84,7 @@ public class TransactionRepositoryTest {
     @Test
     @DisplayName("Should delete a Transaction")
     void testDeleteTransaction(){
-        Category cat = new Category("Gas");
+        Category cat = new Category("Gas", false);
         Category savedCat = categoryRepository.save(cat);
 
         //Create transaction
