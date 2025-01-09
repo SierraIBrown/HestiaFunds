@@ -16,6 +16,8 @@ public class Category {
 
     private String name;
 
+    private boolean preloaded;
+
     public Category(){}
 
     public Category(String name){this.name = name;}
@@ -23,9 +25,11 @@ public class Category {
     //Getters
     public Long getId(){return id;}
     public String getName(){return name;}
+    public boolean isPreloaded(){return preloaded;}
 
 
     //Setters
     public void setId(Long id){this.id = id;}
     public void setName(String name){this.name = name;}
+    public void setPreloaded(boolean preloaded){this.preloaded = preloaded;}
 }
