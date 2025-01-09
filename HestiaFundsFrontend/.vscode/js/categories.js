@@ -15,15 +15,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
             //Populate the list
             categories.forEach((category) => {
-                const listItem = document.createElement("li");
-                listItem.innerHTML = `
-                <span>${category.name}</span>
-                ${!category.preloaded ? `
-                    <button data-id="${category.id}" class="edit-btn">Edit</button>
-                    <button data-id="${category.id}" class="delete-btn">Delete</button>
-                    ` : `<span class"preloaded-tag">[Default]</span>`}
-                `;
-                categoriesContainer.appendChild(listItem);
+                const categoryLabel = document.createElement("span");
+                categoryLabel.className = "category-label";
+                categoryLabel.textContent = category.name;
+
+                //Add edit and delete buttons for user-created categories
+                if(!category.preloaded){
+                    const editButton = document.createElement("button");
+                    editButton.textContent = "Edit";
+                    editButton.className = "edit-btn";
+                    editButton.onclick = () => editCategory(category.id);
+
+                    const deleteButton = document.createElement("button");
+                    deleteButton.textContent = "Delete";
+                    deleteButton.className = "delete-btn";
+                    deleteButton.onclick = () => deleteCategory(category.id);
+
+                    categoryLabel.appendChild(editButton);
+                    categoryLabel.appendChild(deleteButton);
+                }
+                categoriesContainer.appendChild(categoryLabel);
             });
         }
         catch(error){
@@ -120,20 +131,6 @@ document.addEventListener("DOMContentLoaded", () => {
             console.error("Error deleting category:", error);
         }
     }
-
-    //Handle edit and delete button clicks
-    categoriesContainer.addEventListener("click", (event) => {
-        const target = event.target;
-        const id = target.dataset.id;
-
-        if(target.classList.contains("edit-btn")){
-            editCategory(id);
-        }
-
-        if(target.classList.contains("delete-btn")){
-            deleteCategory(id);
-        }
-    });
 
     //Attach event listener to the form
     categoryForm.addEventListener("submit", addCategory);
