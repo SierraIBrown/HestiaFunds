@@ -36,20 +36,22 @@
 
         <main>
             <h2>Transactions</h2>
-            <section id="transactions-table">
-                <h3>Existing Transactions</h3>
-                <table>
-                    <thread>
-                        <tr>
-                            <th>Date</th>
-                            <th>Amount</th>
-                            <th>Category</th>
-                            <th>Description</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thread>
-                    <tbody id="transactions-body"></tbody>
-                </table>
+            <section id="calendar">
+                <div id="calendar-header">
+                    <button id="prev-month">&lt;</button>
+                    <h3 id="month-year"></h3>
+                    <button id="next-month">&lt;</button>
+                </div>
+                <div id="calendar-days">
+                    <div class="day-header">Sunday</div>
+                    <div class="day-header">Monday</div>
+                    <div class="day-header">Tuesday</div>
+                    <div class="day-header">Wednesday</div>
+                    <div class="day-header">Thursday</div>
+                    <div class="day-header">Friday</div>
+                    <div class="day-header">Saturday</div>
+                </div>
+                <div id="calendar-grid"></div>
             </section>
 
             <section id="add-transaction-form">
