@@ -104,23 +104,56 @@ main h2{
     margin-top: 0;
     color: #3b2f2f;
 }
-/* Transactions Table */
-#transactions-table table{
+/* Transactions Calendar */
+#calendar{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+}
+#calendar-header{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     width: 100%;
-    border-collapse: collapse;
-    margin-top: 1rem;
+    max-width: 600px;
+    margin-bottom: 10px;
 }
-#transactions-table th,
-#transactions-table td{
+#calendar-days{
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    width: 100%;
+    max-width: 1100px;
+    text-align: center;
+    font-weight: bold;
+}
+#calendar-grid{
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    width: 100%;
+    max-width: 1100px;
+}
+.calendar-day{
     border: 1px solid #ddd;
-    padding: 0.75rem;
-    text-align: left;
+    border-radius: 5px;
+    padding: 5px;
+    min-height: 150px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
 }
-#transactions-table th{
-    background-color: #d4b483;
-    color: #fff;
+.calendar-day .day-number{
+    font-weight: bold;
+    margin-bottom: 5px;
 }
-#transactions-table tbody tr:nth-child(even){
+.calendar-day .transaction{
+    font-size: .8em;
+    margin-bottom: 3px;
+}
+.calendar-day.empty{
     background-color: #f9f9f9;
 }
 /* Add Transaction Form */
