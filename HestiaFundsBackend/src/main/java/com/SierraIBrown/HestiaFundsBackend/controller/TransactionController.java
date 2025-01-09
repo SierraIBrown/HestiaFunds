@@ -42,6 +42,17 @@ public class TransactionController {
     }
 
     /*
+    Get transactions by month and year
+     */
+    @GetMapping("/month/{month}/year/{year}")
+    public ResponseEntity<List<Transaction>> getTransactionsByMonthAndYear(
+            @PathVariable int month, @PathVariable int year){
+        List<Transaction> transactions = transactionRepository.findByMonthAndYear(month, year);
+        return ResponseEntity.ok(transactions);
+    }
+    )
+
+    /*
     Create a new transaction
      */
     @PostMapping
