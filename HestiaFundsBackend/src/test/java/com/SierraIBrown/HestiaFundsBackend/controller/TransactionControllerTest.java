@@ -45,7 +45,7 @@ public class TransactionControllerTest {
         categoryRepository.deleteAll();
 
         //Create valid category to use in tests
-        Category cat = new Category("Test Category");
+        Category cat = new Category("Test Category", false);
         savedCategory = categoryRepository.save(cat);
     }
 

@@ -17,7 +17,7 @@ public class TransactionTest {
         BigDecimal amount = BigDecimal.valueOf(25.75);
         LocalDate date = LocalDate.of(2025, 1, 5);
         String description = "Xbox Game Pass Ultimate";
-        Category category = new Category("Subscriptions");
+        Category category = new Category("Subscriptions", false);
 
         //when
         Transaction transaction = new Transaction(amount, date, description, category);
@@ -37,7 +37,7 @@ public class TransactionTest {
         BigDecimal newAmount = BigDecimal.valueOf(50.00);
         LocalDate newDate = LocalDate.of(2025, 1, 10);
         String newDescription = "Movie Tickets";
-        Category newCategory = new Category("Entertainment");
+        Category newCategory = new Category("Entertainment", false);
 
         //when
         transaction.setAmount(newAmount);

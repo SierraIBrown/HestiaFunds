@@ -150,3 +150,45 @@ main h2{
 #add-transaction-form button:hover{
     background-color: #c49d62;
 }
+/* Categories Labels */
+.categories-labels{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+}
+.category-label{
+    display: inline-flex;
+    align-items: center;
+    background-color: #f4f4f4;
+    color: #333;
+    border-radius: 20px;
+    padding: 5px 10px;
+    font-size: .9em;
+    font-weight: 600;
+    border: 1px solid #ddd;
+    cursor: default;
+    transition: all 0.3s;
+}
+.category-label:hover{
+    background-color: #e1e4e8;
+}
+.category-label .edit-btn,
+.category-label .delete-btn{
+    background: none;
+    border: none;
+    color: #0366d6;
+    cursor: pointer;
+    margin-left: 5px;
+    font-size: .8em;
+    font-weight: bold;
+    padding: 2px;
+}
+.category-label .delete-btn{
+    color: #d73a49;
+}
+.category-label .edit-btn:hover,
+.category-label .delete-btn:hover{
+    text-decoration: underline;
+}
