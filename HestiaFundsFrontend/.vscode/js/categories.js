@@ -36,9 +36,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
                 categoriesContainer.appendChild(categoryLabel);
             });
+            showNotification("Categories loaded.", "info");
         }
         catch(error){
             console.error("Error fetching categories:", error);
+            showNotification("Error fetching categories", "error");
         }
     }
 
@@ -49,7 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const name = document.getElementById("name").value;
 
         if(name.trim() === ""){
-            alert("Category name cannot be empty!");
+            showNotification("Category name cannot be empty!", warning);
             return;
         }
 
@@ -63,17 +65,17 @@ document.addEventListener("DOMContentLoaded", () => {
             });
 
             if(response.ok){
-                alert("Category added successfully!");
-                categoryForm.requestFullscreen();
+                showNotification("Category added successfully!", "success");
                 fetchCategories();
             }
             else{
                 const error = await response.text();
-                alert(`Failed to add category: ${error}`);
+                showNotification(`Failed to add category: ${error}`, "error");
             }
         }
         catch(error){
             console.error("Error adding category:", error);
+            showNotification("An unexpected error occurred. Please try again.", "error");
         }
     }
 
@@ -82,7 +84,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const newName = prompt("Enter new category name:");
 
         if(!newName || newName.trim() === ""){
-            alert("Category name cannot be empty!");
+            showNotification("Category name cannot be empty!", "warning");
             return;
         }
 
@@ -96,15 +98,17 @@ document.addEventListener("DOMContentLoaded", () => {
             });
 
             if(response.ok){
-                alert("Category updates successfully!");
+                showNotification("Category updates successfully!", "success");
+                categoryForm.reset();
                 fetchCategories();
             }
             else{
-                alert("Failed to update category.");
+                showNotification("Failed to update category.", "error");
             }
         }
         catch(error){
             console.error("Error updating category:", error);
+            showNotification("Error updating category.", "error");
         }
     }
 
@@ -120,16 +124,41 @@ document.addEventListener("DOMContentLoaded", () => {
             });
 
             if(response.ok){
-                alert("Category deleted successfully!");
+                showNotification("Category deleted successfully!", "success");
                 fetchCategories();
             }
             else{
-                alert("Failed to delete category.");
+                showNotification("Failed to delete category.", "error");
             }
         }
         catch(error){
             console.error("Error deleting category:", error);
+            showNotification("Error deleting category.", "error");
         }
+    }
+
+    //Notification
+    function showNotification(message, type = "success"){
+        const notificationContainer = document.getElementById("notification-container");
+
+        //Create the notification element
+        const notification = document.createElement("div");
+        notification.className = `notification ${type}`;
+        notification.textContent = message;
+
+        //Add a close button
+        const closeButton = document.createElement("button");
+        closeButton.innerHTML = "&times;"
+        closeButton.onclick = () => notification.remove();
+        notification.appendChild(closeButton);
+
+        //Append it to the container
+        notificationContainer.appendChild(notification);
+
+        //Remove it after 4 seconds
+        setTimeout(() => {
+            notification.remove();
+        }, 4000);
     }
 
     //Attach event listener to the form

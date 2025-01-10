@@ -17,9 +17,11 @@ document.addEventListener("DOMContentLoaded", () => {
             const response = await fetch(`${API_BASE_URL}/transactions?year=${year}&month=${month + 1}`);
             const transactions = await response.json();
             populateCalendar(year, month, transactions);
+            showNotification("Transactions for the month loaded.", "info");
         }
         catch(error){
             console.error("Error fetching transactions:", error);
+            showNotification("Error fetching transactions.", "error");
         }
     }
 
@@ -87,9 +89,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 option.textContent = category.name;
                 categorySelect.appendChild(option);
             });
+
+            showNotification("Categories fetched successfully.", "success");
         }
         catch(error){
             console.error("Error fetching categories:", error);
+            showNotification("Error fetching categories.", "error");
         }
     }
 
@@ -104,15 +109,16 @@ document.addEventListener("DOMContentLoaded", () => {
             });
 
             if(response.ok){
-                alert("Transaction updated successfully!");
-                fetchTransactions();
+                showNotification("Transaction updated successfully!", "success");
+                fetchTransactionsForMonth();
             }
             else{
-                alert("Failed to update transaction.");
+                showNotification("Failed to update transaction.", "error");
             }
         }
         catch(error){
             console.error("Error updating transaction:", error);
+            showNotification("Error updating transaction", "error");
         }
     }
 
@@ -123,15 +129,16 @@ document.addEventListener("DOMContentLoaded", () => {
             });
 
             if(response.ok){
-                alert("Transaction deleted successfully!");
-                fetchTransactions();
+                showNotification("Transaction deleted successfully!", "success");
+                fetchTransactionsForMonth();
             }
             else{
-                alert("Failed to delete transaction.");
+                showNotification("Failed to delete transaction.", "error");
             }
         }
         catch(error){
             console.error("Error deleting transaction:", error);
+            showNotification("Error deleting transaction.", "error");
         }
     }
 
@@ -169,7 +176,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 await editTransaction(updatedTransaction);
             }
             else{
-                alert("All fields are required for editing a transaction.");
+                showNotification("All fields are required for editing a transaction.", "warning");
             }
         }
 
@@ -204,16 +211,41 @@ document.addEventListener("DOMContentLoaded", () => {
             });
 
             if (response.ok) {
-                alert("Transaction added successfully!");
+                showNotification("Transaction added successfully!", "success");
                 fetchTransactionsForMonth(currentDate.getFullYear(), currentDate.getMonth());
                 transactionForm.reset();
             } else {
-                alert("Failed to add transaction.");
+                showNotification("Failed to add transaction.", "error");
             }
         } catch (error) {
             console.error("Error adding transaction:", error);
+            showNotification("Error adding transaction.", "error");
         }
     });
+
+        //Notification
+        function showNotification(message, type = "success"){
+            const notificationContainer = document.getElementById("notification-container");
+    
+            //Create the notification element
+            const notification = document.createElement("div");
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+    
+            //Add a close button
+            const closeButton = document.createElement("button");
+            closeButton.innerHTML = "&times;"
+            closeButton.onclick = () => notification.remove();
+            notification.appendChild(closeButton);
+    
+            //Append it to the container
+            notificationContainer.appendChild(notification);
+    
+            //Remove it after 4 seconds
+            setTimeout(() => {
+                notification.remove();
+            }, 4000);
+        }
 
     //Initial fetches
     fetchCategories();
