@@ -95,19 +95,52 @@ footer{
     z-index: 1000;
 }
 .notification{
-    background-color: #4caf50;
-    color: white;
-    padding: 15px;
+    background-color: #e9ecef;
+    color: #333;
+    padding: 15px 20px;
     margin-bottom: 10px;
-    border-radius: 5px;
+    border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    font-family: 'Nunito', sans-serif;
     animation: fadeIn 0.3s ease-out, fadeOut 0.3s ease-in 4s forwards;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.notification.success{
+    background-color: #d4edda;
+    color: #155724;
+    border-left: 4px solid #281745;
 }
 .notification.error{
-    background-color: #f44336;
+    background-color: #f8d7da;
+    color: #721c24;
+    border-left: 4px solid #dc3545;
 }
 .notification.warning{
-    background-color: #ff9800;
+    background-color: #fff3cd;
+    color: #856404;
+    border-left: 4px solid #ffc107;
+}
+.notification.info{
+    background-color: #cce5ff;
+    color: #004085;
+    border-left: 4px solid #007bff;
+}
+.notification button{
+    background: none;
+    border: none;
+    color: inherit;
+    font-size: 18px;
+    cursor: pointer;
+    margin-left: auto;
+    padding: 0;
+    display: flex;
+    align-items: center;
+}
+.notification button:hover{
+    color: rgba(0, 0, 0, 0.6);
 }
 @keyframes fadeIn{
     from{
