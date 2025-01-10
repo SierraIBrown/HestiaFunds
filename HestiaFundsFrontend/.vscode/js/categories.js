@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const name = document.getElementById("name").value;
 
         if(name.trim() === ""){
-            alert("Category name cannot be empty!");
+            showNotification("Category name cannot be empty!");
             return;
         }
 
@@ -63,16 +63,17 @@ document.addEventListener("DOMContentLoaded", () => {
             });
 
             if(response.ok){
-                alert("Category added successfully!");
+                showNotification("Category added successfully!");
                 fetchCategories();
             }
             else{
                 const error = await response.text();
-                alert(`Failed to add category: ${error}`);
+                showNotification(`Failed to add category: ${error}`);
             }
         }
         catch(error){
             console.error("Error adding category:", error);
+            showNotification("An unexpected error occurred. Please try again.", "error");
         }
     }
 
@@ -81,7 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const newName = prompt("Enter new category name:");
 
         if(!newName || newName.trim() === ""){
-            alert("Category name cannot be empty!");
+            showNotification("Category name cannot be empty!");
             return;
         }
 
@@ -95,12 +96,12 @@ document.addEventListener("DOMContentLoaded", () => {
             });
 
             if(response.ok){
-                alert("Category updates successfully!");
+                showNotification("Category updates successfully!");
                 categoryForm.reset();
                 fetchCategories();
             }
             else{
-                alert("Failed to update category.");
+                showNotification("Failed to update category.");
             }
         }
         catch(error){
@@ -120,16 +121,33 @@ document.addEventListener("DOMContentLoaded", () => {
             });
 
             if(response.ok){
-                alert("Category deleted successfully!");
+                showNotification("Category deleted successfully!");
                 fetchCategories();
             }
             else{
-                alert("Failed to delete category.");
+                showNotification("Failed to delete category.");
             }
         }
         catch(error){
             console.error("Error deleting category:", error);
         }
+    }
+
+    function showNotification(message, type = "success"){
+        const notificationContainer = document.getElementById("notification-container");
+
+        //Create the notification element
+        const notification = document.createElement("div");
+        notification.className = `notification ${type}`;
+        notification.textContent = message;
+
+        //Append it to the container
+        notificationContainer.appendChild(notification);
+
+        //Remove it after 4 seconds
+        setTimeout(() => {
+            notification.remove();
+        }, 4000);
     }
 
     //Attach event listener to the form
