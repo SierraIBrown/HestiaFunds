@@ -64,7 +64,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if(response.ok){
                 alert("Category added successfully!");
-                categoryForm.requestFullscreen();
                 fetchCategories();
             }
             else{
@@ -97,6 +96,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if(response.ok){
                 alert("Category updates successfully!");
+                categoryForm.reset();
                 fetchCategories();
             }
             else{
