@@ -18,6 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const categoryLabel = document.createElement("span");
                 categoryLabel.className = "category-label";
                 categoryLabel.textContent = category.name;
+                categoryLabel.style.backgroundColor = category.color || "#ddd";
 
                 //Add edit and delete buttons for user-created categories
                 if(!category.preloaded){
@@ -49,6 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
         event.preventDefault();
 
         const name = document.getElementById("name").value;
+        const color = document.getElementById("color").value;
 
         if(name.trim() === ""){
             showNotification("Category name cannot be empty!", warning);
@@ -61,7 +63,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ name }),
+                body: JSON.stringify({ name, color }),
             });
 
             if(response.ok){

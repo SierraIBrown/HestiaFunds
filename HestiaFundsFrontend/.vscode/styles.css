@@ -258,6 +258,10 @@ main h2{
 #add-transaction-form button:hover{
     background-color: #c49d62;
 }
+#category option[value="editCategories"]{
+    color: #007bff;
+    font-weight: bold;
+}
 /* Categories Labels */
 .categories-labels{
     display: flex;

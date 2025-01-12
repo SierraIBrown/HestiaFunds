@@ -105,7 +105,7 @@ document.addEventListener("DOMContentLoaded", () => {
             //Add the Edit/View Categories option
             const editViewOption = document.createElement("option");
             editViewOption.value = "editCategories";
-            editViewOption.textContent = "Edit/View Categories";
+            editViewOption.textContent = "Edit/View Categories...";
             categorySelect.appendChild(editViewOption);
 
             showNotification("Categories fetched successfully.", "success");
