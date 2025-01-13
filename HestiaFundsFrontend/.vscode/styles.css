@@ -273,8 +273,7 @@ main h2{
 .category-label{
     display: inline-flex;
     align-items: center;
-    background-color: #f4f4f4;
-    color: #333;
+    color: #fff;
     border-radius: 20px;
     padding: 5px 10px;
     font-size: .9em;
@@ -288,14 +287,17 @@ main h2{
 }
 .category-label .edit-btn,
 .category-label .delete-btn{
-    background: none;
+    background: white;
+    border-radius: 20px;
     border: none;
-    color: #0366d6;
     cursor: pointer;
     margin-left: 5px;
     font-size: .8em;
     font-weight: bold;
-    padding: 2px;
+    padding: 3px;
+}
+.category-label .edit-btn{
+    color: #0366d6;
 }
 .category-label .delete-btn{
     color: #d73a49;
