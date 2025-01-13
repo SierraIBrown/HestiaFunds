@@ -42,6 +42,7 @@ public class CategoryControllerTest {
         Category defaultCategory = new Category();
         defaultCategory.setName("Default Category");
         defaultCategory.setPreloaded(true);
+        defaultCategory.setColor("#d3d3d3");
         categoryRepository.save(defaultCategory);
         defaultCategoryId = defaultCategory.getId();
 
@@ -49,6 +50,7 @@ public class CategoryControllerTest {
         Category userCategory = new Category();
         userCategory.setName("User Category");
         userCategory.setPreloaded(false);
+        userCategory.setColor("#f5a623");
         categoryRepository.save(userCategory);
         userCategoryId = userCategory.getId();
     }
@@ -63,7 +65,7 @@ public class CategoryControllerTest {
     }
 
     /*
-    Tests creating new Category
+    Tests creating new category without a specified color
      */
     @Test
     void testCreateCategory() throws Exception{
@@ -73,7 +75,26 @@ public class CategoryControllerTest {
         mockMvc.perform(post("/api/categories")
                 .contentType("application/json")
                 .content(objectMapper.writeValueAsString(newCategory)))
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.name").value("Pet Supplies"))
+                .andExpect(jsonPath("$.color").isNotEmpty());
+    }
+
+    /*
+    Tests creating a new category with a specified color
+     */
+    @Test
+    void testCreateCategoryWithColor() throws Exception{
+        Category newCategory = new Category();
+        newCategory.setName("Books");
+        newCategory.setColor("#ff5733");
+
+        mockMvc.perform(post("/api/categories")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(newCategory)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.name").value("Books"))
+                .andExpect(jsonPath("$.color").value("#ff5733"));
     }
 
     /*
@@ -122,5 +143,21 @@ public class CategoryControllerTest {
         mockMvc.perform(delete("/api/categories/{id}", defaultCategoryId))
                 .andExpect(status().isForbidden())
                 .andExpect(content().string("Cannot delete default categories."));
+    }
+
+    /*
+    Tests if it rejects invalid color format
+     */
+    @Test
+    void testRejectInvalidColorFormat() throws Exception{
+        Category invalidCategory = new Category();
+        invalidCategory.setName("Invalid");
+        invalidCategory.setColor("Not a color");
+
+        mockMvc.perform(post("/api/categories")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(invalidCategory)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Invalid color format."));
     }
 }

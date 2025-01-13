@@ -32,10 +32,15 @@ public class CategoryController {
             return ResponseEntity.badRequest().body("Category name cannot be empty");
         }
 
+        if(categoryRequest.getColor() != null && !categoryRequest.getColor().matches("^#[0-9a-fA-F]{6}$")){
+            return ResponseEntity.badRequest().body("Invalid color format.");
+        }
+
         //Set a default random color if none is provided
         if(categoryRequest.getColor() == null || categoryRequest.getColor().isEmpty()){
             categoryRequest.setColor(generateRandomColor());
         }
+
         Category saved = categoryRepository.save(categoryRequest);
         return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
