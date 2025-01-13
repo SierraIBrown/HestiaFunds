@@ -163,7 +163,7 @@ footer{
         transform: translateY(-20px);
     }
 }
-/* Modal overlay */
+/* Modal styling */
 .modal-overlay{
     position: fixed;
     top: 0;
@@ -176,7 +176,6 @@ footer{
     align-items: center;
     z-index: 1000;
 }
-/* Modal container */
 .modal{
     background: #fff;
     border-radius: 10px;
@@ -191,6 +190,24 @@ footer{
 }
 .modal-content{
     margin: 20px 0;
+}
+.modal-content form{
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+.modal-content input[type="text"]{
+    padding: 8px;
+    font-size: 14px;
+}
+.modal-content input[type="color"]{
+    padding: 8px;
+    font-size: 14px;
+    margin-left: 175px;
+}
+.nmodal-content label{
+    font-weight: bold;
+    margin-bottom: 5px;
 }
 .modal-actions{
     display: flex;
@@ -218,7 +235,6 @@ footer{
 .modal-cancel-btn:hover{
     background-color: #e53935;
 }
-/* Specific modal colors */
 .modal.edit{
     border: 2px solid #4caf50;
 }
@@ -368,4 +384,19 @@ main h2{
 .category-label .edit-btn:hover,
 .category-label .delete-btn:hover{
     text-decoration: underline;
+}
+.add-category-btn{
+    display: inline-flex;
+    align-items: center;
+    color: #000000;
+    border-radius: 20px;
+    padding: 5px 10px;
+    font-size: .9em;
+    font-weight: 600;
+    border: 1px solid #ddd;
+    cursor: default;
+    transition: all 0.3s;
+}
+.add-category-btn:hover{
+    background-color: #d3d3d3;
 }

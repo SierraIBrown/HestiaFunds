@@ -37,6 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
                 categoriesContainer.appendChild(categoryLabel);
             });
+            addPlusButton();
             showNotification("Categories loaded.", "info");
         }
         catch(error){
@@ -45,40 +46,52 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    //Add a new category
-    async function addCategory(event){
-        event.preventDefault();
+    //Show the modal for adding a new category
+    function showAddCategoryModal(){
+        showModal(
+            "Add New Category",
+            `
+            <form id="modal-category-form">
+                <label for="modal-category-name">Category Name:</label>
+                <input type="text" id="modal-category-name" placeholder="Enter category name" required>
+                <label for="modal-category-color">Tag Color:</label>
+                <input type="color" id="modal-category-color" value="#cccccc">
+            </form>
+            `,
+            async () => {
+                const name = document.getElementById("modal-category-name").value;
+                const color = document.getElementById("modal-category-color").value;
 
-        const name = document.getElementById("name").value;
-        const color = document.getElementById("color").value;
+                if(!name.trim()){
+                    showNotification("Category name cannot be empty!", "warning");
+                    return;
+                }
 
-        if(name.trim() === ""){
-            showNotification("Category name cannot be empty!", warning);
-            return;
-        }
-
-        try{
-            const response = await fetch(`${API_BASE_URL}/categories`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ name, color }),
-            });
-
-            if(response.ok){
-                showNotification("Category added successfully!", "success");
-                fetchCategories();
-            }
-            else{
-                const error = await response.text();
-                showNotification(`Failed to add category: ${error}`, "error");
-            }
-        }
-        catch(error){
-            console.error("Error adding category:", error);
-            showNotification("An unexpected error occurred. Please try again.", "error");
-        }
+                try{
+                    const response = await fetch(`${API_BASE_URL}/categories`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({ name, color }),
+                    });
+        
+                    if(response.ok){
+                        showNotification("Category added successfully!", "success");
+                        fetchCategories();
+                    }
+                    else{
+                        const error = await response.text();
+                        showNotification(`Failed to add category: ${error}`, "error");
+                    }
+                }
+                catch(error){
+                    console.error("Error adding category:", error);
+                    showNotification("An unexpected error occurred. Please try again.", "error");
+                }
+            },
+            "add"
+        );
     }
 
     //Edit a category
@@ -152,6 +165,15 @@ document.addEventListener("DOMContentLoaded", () => {
         );
     }
 
+    // Add a "+" button for opening the modal form
+    function addPlusButton(){
+        const plusButton = document.createElement("button");
+        plusButton.textContent = "+";
+        plusButton.className = "add-category-btn";
+        plusButton.onclick = () => showAddCategoryModal();
+        categoriesContainer.appendChild(plusButton);
+    }
+
     //Show a modal
     function showModal(title, content, onConfirm, type = "info"){
         //Create the modal overlay
@@ -221,9 +243,6 @@ document.addEventListener("DOMContentLoaded", () => {
             notification.remove();
         }, 4000);
     }
-
-    //Attach event listener to the form
-    categoryForm.addEventListener("submit", addCategory);
 
     //Initial fetch
     fetchCategories();
