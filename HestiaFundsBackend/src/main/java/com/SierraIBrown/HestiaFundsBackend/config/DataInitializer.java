@@ -21,20 +21,28 @@ public class DataInitializer {
         long categoryCount = categoryRepository.count();
         if(categoryCount == 0){
             List<Category> defaultCategories = Arrays.asList(
-                    new Category("Car Loans", true),
-                    new Category("Credit Card Bills", true),
-                    new Category("Gas", true),
-                    new Category("Groceries", true),
-                    new Category("Entertainment", true),
-                    new Category("Personal", true),
-                    new Category("Rent/Mortgage", true),
-                    new Category("Student Loans", true),
-                    new Category("Subscriptions", true),
-                    new Category("Utilties", true)
+                    createCategoryWithColor("Car Loans", true, "#6f4f28"),
+                    createCategoryWithColor("Credit Card Bills", true, "#1d334a"),
+                    createCategoryWithColor("Gas", true, "#a2231d"),
+                    createCategoryWithColor("Groceries", true, "#2f353b"),
+                    createCategoryWithColor("Entertainment",  true, "#015d52"),
+                    createCategoryWithColor("Personal", true, "#e4a010"),
+                    createCategoryWithColor("Rent/Mortgage", true, "#592321"),
+                    createCategoryWithColor("Student Loans", true, "#f5d033"),
+                    createCategoryWithColor("Subscriptions", true, "#3b83bd"),
+                    createCategoryWithColor("Utilities", true, "#587246")
             );
 
             categoryRepository.saveAll(defaultCategories);
             System.out.println("Default categories have been inserted");
         }
+    }
+
+    private Category createCategoryWithColor(String name, boolean preloaded, String color){
+        Category category = new Category();
+        category.setName(name);
+        category.setPreloaded(preloaded);
+        category.setColor(color);
+        return category;
     }
 }

@@ -83,12 +83,30 @@ document.addEventListener("DOMContentLoaded", () => {
             const response = await fetch(`${API_BASE_URL}/categories`);
             const categories = await response.json();
 
+            const categorySelect = document.getElementById("category");
+            categorySelect.innerHTML = "";
+
+            //Add a default option
+            const defaultOption = document.createElement("option");
+            defaultOption.value = "";
+            defaultOption.disabled = true;
+            defaultOption.selected = true;
+            defaultOption.textContent = "Select a category";
+            categorySelect.appendChild(defaultOption);
+
+            //Populate the dropdown with categories
             categories.forEach((category) => {
                 const option = document.createElement("option");
                 option.value = category.id;
                 option.textContent = category.name;
                 categorySelect.appendChild(option);
             });
+
+            //Add the Edit/View Categories option
+            const editViewOption = document.createElement("option");
+            editViewOption.value = "editCategories";
+            editViewOption.textContent = "Edit/View Categories...";
+            categorySelect.appendChild(editViewOption);
 
             showNotification("Categories fetched successfully.", "success");
         }
@@ -97,6 +115,13 @@ document.addEventListener("DOMContentLoaded", () => {
             showNotification("Error fetching categories.", "error");
         }
     }
+
+    //Handle category selection
+    document.getElementById("category").addEventListener("change", (event) => {
+        if(event.target.value === "editCategories"){
+            window.location.href = "categories.html";
+        }
+    });
 
     async function editTransaction(transaction){
         try{

@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Random;
 
 @RestController
 @RequestMapping("/api/categories")
@@ -30,6 +31,16 @@ public class CategoryController {
         if(categoryRequest.getName() == null || categoryRequest.getName().trim().isEmpty()){
             return ResponseEntity.badRequest().body("Category name cannot be empty");
         }
+
+        if(categoryRequest.getColor() != null && !categoryRequest.getColor().matches("^#[0-9a-fA-F]{6}$")){
+            return ResponseEntity.badRequest().body("Invalid color format.");
+        }
+
+        //Set a default random color if none is provided
+        if(categoryRequest.getColor() == null || categoryRequest.getColor().isEmpty()){
+            categoryRequest.setColor(generateRandomColor());
+        }
+
         Category saved = categoryRepository.save(categoryRequest);
         return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
@@ -61,5 +72,14 @@ public class CategoryController {
             categoryRepository.delete(category);
             return ResponseEntity.ok().body("Category deleted successfully");
         }).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Category not found"));
+    }
+
+    //Utility to generate a random color
+    private String generateRandomColor(){
+        Random random = new Random();
+        int red = random.nextInt(256);
+        int green = random.nextInt(256);
+        int blue = random.nextInt(256);
+        return String.format("#%02x%02x%02x", red, green, blue);
     }
 }

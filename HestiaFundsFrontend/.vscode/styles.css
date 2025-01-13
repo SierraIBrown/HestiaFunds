@@ -1,3 +1,4 @@
+/* Site defaults */
 body{
     font-family: "Nunito", sans-serif;
     margin: 0;
@@ -162,6 +163,84 @@ footer{
         transform: translateY(-20px);
     }
 }
+/* Modal styling */
+.modal-overlay{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+.modal{
+    background: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+.modal h3{
+    margin: 0 0 10px;
+}
+.modal-content{
+    margin: 20px 0;
+}
+.modal-content form{
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+.modal-content input[type="text"]{
+    padding: 8px;
+    font-size: 14px;
+}
+.modal-content input[type="color"]{
+    padding: 8px;
+    font-size: 14px;
+    margin-left: 175px;
+}
+.nmodal-content label{
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+.modal-actions{
+    display: flex;
+    justify-content: space-between;
+}
+.modal-confirm-btn{
+    background-color: #4caf50;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.modal-cancel-btn{
+    background-color: #f44336;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.modal-confirm-btn:hover{
+    background-color: #45a049;
+}
+.modal-cancel-btn:hover{
+    background-color: #e53935;
+}
+.modal.edit{
+    border: 2px solid #4caf50;
+}
+.modal.delete{
+    border: 2px solid #f44336;
+}
 /* Main content styling */
 main{
     margin-top: 140px;
@@ -258,6 +337,10 @@ main h2{
 #add-transaction-form button:hover{
     background-color: #c49d62;
 }
+#category option[value="editCategories"]{
+    color: #007bff;
+    font-weight: bold;
+}
 /* Categories Labels */
 .categories-labels{
     display: flex;
@@ -269,8 +352,7 @@ main h2{
 .category-label{
     display: inline-flex;
     align-items: center;
-    background-color: #f4f4f4;
-    color: #333;
+    color: #fff;
     border-radius: 20px;
     padding: 5px 10px;
     font-size: .9em;
@@ -284,14 +366,17 @@ main h2{
 }
 .category-label .edit-btn,
 .category-label .delete-btn{
-    background: none;
+    background: white;
+    border-radius: 20px;
     border: none;
-    color: #0366d6;
     cursor: pointer;
     margin-left: 5px;
     font-size: .8em;
     font-weight: bold;
-    padding: 2px;
+    padding: 3px;
+}
+.category-label .edit-btn{
+    color: #0366d6;
 }
 .category-label .delete-btn{
     color: #d73a49;
@@ -299,4 +384,19 @@ main h2{
 .category-label .edit-btn:hover,
 .category-label .delete-btn:hover{
     text-decoration: underline;
+}
+.add-category-btn{
+    display: inline-flex;
+    align-items: center;
+    color: #000000;
+    border-radius: 20px;
+    padding: 5px 10px;
+    font-size: .9em;
+    font-weight: 600;
+    border: 1px solid #ddd;
+    cursor: default;
+    transition: all 0.3s;
+}
+.add-category-btn:hover{
+    background-color: #d3d3d3;
 }
