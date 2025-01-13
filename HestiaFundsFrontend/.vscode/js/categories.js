@@ -83,60 +83,119 @@ document.addEventListener("DOMContentLoaded", () => {
 
     //Edit a category
     async function editCategory(id){
-        const newName = prompt("Enter new category name:");
+        showModal(
+            "Edit Category",
+            `
+            <label for="new-category-name">New Category Name:</label>
+            <input type="text" id="new-category-name" placeholder="Enter new name"> 
+            `,
+            async () => {
+                const newName = document.getElementById("new-category-name").value;
 
-        if(!newName || newName.trim() === ""){
-            showNotification("Category name cannot be empty!", "warning");
-            return;
-        }
+                if(!newName || newName.trim() === ""){
+                    showNotification("Category name cannot be empty!", "warning");
+                    return;
+                }
 
-        try{
-            const response = await fetch(`${API_BASE_URL}/categories/${id}`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ name: newName }),
-            });
+                try{
+                    const response = await fetch(`${API_BASE_URL}/categories/${id}`, {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({ name: newName }),
+                    });
 
-            if(response.ok){
-                showNotification("Category updates successfully!", "success");
-                categoryForm.reset();
-                fetchCategories();
-            }
-            else{
-                showNotification("Failed to update category.", "error");
-            }
-        }
-        catch(error){
-            console.error("Error updating category:", error);
-            showNotification("Error updating category.", "error");
-        }
+                    if(response.ok){
+                        showNotification("Category updates successfully!", "success");
+                        categoryForm.reset();
+                        fetchCategories();
+                    }
+                    else{
+                        showNotification("Failed to update category.", "error");
+                    }
+                }
+                catch(error){
+                    console.error("Error updating category:", error);
+                    showNotification("Error updating category.", "error");
+                }
+            },
+            "edit"
+        );
     }
 
     //Delete a cateogry
     async function deleteCategory(id){
-        if(!confirm("Are you sure you want to delete this category?")){
-            return;
-        }
+        showModal(
+            "Delete Category",
+            "<p>Are you sure you want to delete this category? This action cannot be undone.</p>",
+            async () => {
+                try{
+                    const response = await fetch(`${API_BASE_URL}/categories/${id}`, {
+                        method: "DELETE",
+                    });
+        
+                    if(response.ok){
+                        showNotification("Category deleted successfully!", "success");
+                        fetchCategories();
+                    }
+                    else{
+                        showNotification("Failed to delete category.", "error");
+                    }
+                }
+                catch(error){
+                    console.error("Error deleting category:", error);
+                    showNotification("Error deleting category.", "error");
+                }
+            },
+            "delete"
+        );
+    }
 
-        try{
-            const response = await fetch(`${API_BASE_URL}/categories/${id}`, {
-                method: "DELETE",
-            });
+    //Show a modal
+    function showModal(title, content, onConfirm, type = "info"){
+        //Create the modal overlay
+        const modalOverlay = document.createElement("div");
+        modalOverlay.className = "modal-overlay";
 
-            if(response.ok){
-                showNotification("Category deleted successfully!", "success");
-                fetchCategories();
-            }
-            else{
-                showNotification("Failed to delete category.", "error");
-            }
-        }
-        catch(error){
-            console.error("Error deleting category:", error);
-            showNotification("Error deleting category.", "error");
-        }
+        //Create the modal container
+        const modal = document.createElement("div");
+        modal.className = "modal ${type}";
+
+        //Create the modal title
+        const modalTitle = document.createElement("h3");
+        modalTitle.textContent = title;
+        modal.appendChild(modalTitle);
+
+        //Add the modal content
+        const modalContent = document.createElement("div");
+        modalContent.className = "modal-content";
+        modalContent.innerHTML = content;
+        modal.appendChild(modalContent);
+
+        //Add action buttons
+        const actions = document.createElement("div");
+        actions.className = "modal-actions";
+
+        const confirmButton = document.createElement("button");
+        confirmButton.textContent = "Confirm";
+        confirmButton.className = "modal-confirm-btn";
+        confirmButton.onclick = () => {
+            onConfirm();
+            modalOverlay.remove();
+        };
+
+        const cancelButton = document.createElement("button");
+        cancelButton.textContent = "Cancel";
+        cancelButton.className = "modal-cancel-btn";
+        cancelButton.onclick = () => modalOverlay.remove();
+
+        actions.appendChild(cancelButton);
+        actions.appendChild(confirmButton);
+        modal.appendChild(actions);
+
+        modalOverlay.appendChild(modal);
+        document.body.appendChild(modalOverlay);
     }
 
     //Notification
