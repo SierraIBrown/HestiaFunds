@@ -119,9 +119,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 <input type="date" id="modal-transaction-date" value="${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}" readonly required>
                 <label for="modal-transaction-amount">Amount:</label>
                 <input type="number" id="modal-transaction-amount" step="0.01" required>
-                <div id="modal-transaction-category-container">
+                <div id="modal-category-tags-container">
                     <label for="modal-transaction-category">Category:</label>
-                    <div id="category-tags-container"></div>
+                    <div id="modal-category-tags"></div>
                 </div>
                 <input type="hidden" id="modal-transaction-category" required>
                 <label for="modal-transaction-description">Description:</label>
@@ -165,41 +165,7 @@ document.addEventListener("DOMContentLoaded", () => {
             "add"
         );
 
-        fetchCategoriesForTransactionForm();
-    }
-
-    //Fetch categories for the transaction form
-    async function fetchCategoriesForTransactionForm(){
-        try{
-            const response = await fetch(`${API_BASE_URL}/categories`);
-            const categories = await response.json();
-
-            const categoryContainer = document.getElementById("category-tags-container");
-            const hiddenCategoryInput = document.getElementById("modal-transaction-category");
-            categoryContainer.innerHTML = "";
-
-            categories.forEach((category) => {
-                const tag = document.createElement("span");
-                tag.className = "category-tag selectable";
-                tag.textContent = category.name;
-                tag.style.backgroundColor = category.color || "#ddd";
-                tag.dataset.categoryId = category.id;
-
-                tag.addEventListener("click", () => {
-                    document
-                        .querySelectorAll(".category-tag.selectable")
-                        .forEach((el) => el.classList.remove("selected"));
-                    tag.classList.add("selected");
-                    hiddenCategoryInput.value = category.id;
-                });
-
-                categoryContainer.appendChild(tag);
-            });
-        }
-        catch(error){
-            console.error("Error fetching categories:", error);
-            showNotification("Error fetching categories.", "error");
-        }
+        fetchCategoriesForTransactionForm("modal-category-tags", "modal-transaction-category");
     }
 
     //Edit a transaction
@@ -209,26 +175,38 @@ document.addEventListener("DOMContentLoaded", () => {
             `
             <form id="edit-transaction-form">
                 <label for="edit-transaction-amount">Amount:</label>
-                <input type="number" id="edit-transaction-amount" value="${transaction.amount}" step="0.01" required>
-                <input for"edit-transaction-description">Description:</label>
-                <input type="text" id="edit-transaction-description" value="${transaction.description}" required>
+                <input type="number" id="edit-transaction-amount" value="${transaction.amount}" step="0.01">
+
+                <label for="edit-transaction-amount">Date:</label>
+                <input type="date" id="edit-transaction-date" value="${transaction.date || ""}">
+
+                <label for="edit-transaction-description">Description:</label>
+                <input type="text" id="edit-transaction-description" value="${transaction.description}">
+
+                <div id="edit-category-tags-container">
+                    <label for="edit-transaction-category">Category:</label>
+                    <div id="edit-category-tags"></div>
+                </div>
+                <input type="hidden" id="edit-transaction-category">
             `,
             async () => {
-                const updatedAmount = parseFloat(document.getElementById("edit-transaction-amount").value);
-                const updatedDescription = document.getElementById("edit-transaction-description").value;
+                const updatedAmount = document.getElementById("edit-transaction-amount").value || null;
+                const updatedDate = document.getElementById("edit-transaction-date").value || null;
+                const updatedDescription = document.getElementById("edit-transaction-description").value || null;
+                const updatedCategoryId = document.getElementById("edit-transaction-category").value || null;
 
-                if(!updatedAmount || !updatedDescription.trim()){
-                    showNotification("All fields are required.", "warning");
-                    return;
-                }
-
-                const updatedTransaction = { ...transaction, amount: updatedAmount, description: updatedDescription };
+                const updatedTransaction = { 
+                    amount: updatedAmount ? parseFloat(updatedAmount) : null, 
+                    date: updatedDate || null,
+                    description: updatedDescription || null,
+                    category: updatedCategoryId ? { id: parseInt(updatedCategoryId) } : null,
+                };
 
                 try{
                     const response = await fetch(`${API_BASE_URL}/transactions/${transaction.id}`, {
                         method: "PUT",
                         headers: {
-                            "Content-Type:": "application/json",
+                            "Content-Type": "application/json",
                         },
                         body: JSON.stringify(updatedTransaction),
                     });
@@ -248,6 +226,8 @@ document.addEventListener("DOMContentLoaded", () => {
             },
             "edit"
         );
+
+        fetchCategoriesForTransactionForm("edit-category-tags", "edit-transaction-category");
     }
 
     //Delete a transaction
@@ -276,6 +256,46 @@ document.addEventListener("DOMContentLoaded", () => {
             },
             "delete"
         );
+    }
+
+    
+    //Fetch categories for the transaction form
+    async function fetchCategoriesForTransactionForm(containerId, hiddenInputId){
+        try{
+            const response = await fetch(`${API_BASE_URL}/categories`);
+            const categories = await response.json();
+
+            const categoryContainer = document.getElementById(containerId);
+            const hiddenCategoryInput = document.getElementById(hiddenInputId);
+            if(!categoryContainer || !hiddenCategoryInput){
+                console.error(`Container or input element not found: ${containerId}, ${hiddenInputId}`);
+                return;
+            }
+
+            categoryContainer.innerHTML = "";
+
+            categories.forEach((category) => {
+                const tag = document.createElement("span");
+                tag.className = "category-tag selectable";
+                tag.textContent = category.name;
+                tag.style.backgroundColor = category.color || "#ddd";
+                tag.dataset.categoryId = category.id;
+
+                tag.addEventListener("click", () => {
+                    document
+                        .querySelectorAll(".category-tag.selectable")
+                        .forEach((el) => el.classList.remove("selected"));
+                    tag.classList.add("selected");
+                    hiddenCategoryInput.value = category.id;
+                });
+
+                categoryContainer.appendChild(tag);
+            });
+        }
+        catch(error){
+            console.error("Error fetching categories:", error);
+            showNotification("Error fetching categories.", "error");
+        }
     }
 
     //Show a modal

@@ -308,8 +308,8 @@ main h2{
     position: absolute;
     bottom: 8px;
     right: 8px;
-    background-color: #007bff;
-    color: white;
+    background-color: #d4b483;
+    color: #043910;
     border: none;
     border-radius: 50%;
     width: 24px;
@@ -320,7 +320,7 @@ main h2{
     transition: background-color 0.3s ease;
 }
 .calendar-day .add-transaction-btn:hover{
-    background-color: #0056b3;
+    opacity: 0.8;
 }
 .calendar-day.empty{
     background-color: #f9f9f9;
@@ -348,6 +348,17 @@ main h2{
     padding: 1px 3px;
     margin-left: 5px;
     border-radius: 10px;
+    border: none;
+    background-color: white;
+    font-weight: bold;
+    text-decoration: underline;
+    cursor: pointer;
+}
+.category-tag .edit-btn{
+    color: #0366d6;
+}
+.category-tag .delete-btn{
+    color: #d73a49;
 }
 .month-nav{
     background: none;
