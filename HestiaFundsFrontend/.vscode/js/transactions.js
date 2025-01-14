@@ -293,11 +293,21 @@ document.addEventListener("DOMContentLoaded", () => {
             });
 
             //Add a view/edit categories button
-            const viewEditButton = document.createElement("a");
+            const viewEditButton = document.createElement("button");
             viewEditButton.className = "view-edit-categories-btn";
             viewEditButton.textContent = "View/Edit Categories";
-            viewEditButton.href = "../html/categories.html";
-            viewEditButton.role = "button";
+            viewEditButton.type = "button";
+            viewEditButton.onclick = () => {
+                const modalState = {
+                    amount: document.getElementById("modal-transaction-amount")?.value || "",
+                    date: document.getElementById("modal-transaction-date")?.value || "",
+                    description: document.getElementById("modal-transaction-description")?.value || "",
+                    category: document.getElementById("modal-transaction-category")?.value || "",
+                };
+                sessionStorage.setItem("modalState", JSON.stringify(modalState));
+
+                window.location.href = "../html/categories.html";
+            };
 
             categoryContainer.appendChild(viewEditButton);
         }
@@ -376,6 +386,26 @@ document.addEventListener("DOMContentLoaded", () => {
             notification.remove();
         }, 4000);
     }
+
+    
+    //Restore modal state if returning from the categories page
+    window.addEventListener("DOMContentLoaded", () => {
+        const modalState = sessionStorage.getItem("modalState");
+        if(modalState){
+            const state = JSON.parse(modalState);
+
+            showTransactionForm(new Date(state.date).getDate(), currentDate.getFullYear(), currentDate.getMonth());
+
+            //Populate the modal with the saved data
+            document.getElementById("modal-transaction-amount").value = state.amount;
+            document.getElementById("modal-transaction-date").value = state.date;
+            document.getElementById("modal-transaction-description").value = state.description;
+            document.getElementById("modal-transaction-category").value = state.category;
+
+            //Clear the session storage to avoid reloading the state unnecessarily
+            sessionStorage.removeItem("modalState");
+        }
+    });
 
     //Initial fetches
     fetchTransactionsForMonth(currentDate.getFullYear(), currentDate.getMonth());

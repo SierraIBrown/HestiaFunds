@@ -236,7 +236,7 @@ footer{
     background-color: #e53935;
 }
 .modal.edit{
-    border: 2px solid #4caf50;
+    border: 2px solid #365d28;
 }
 .modal.delete{
     border: 2px solid #f44336;
@@ -250,9 +250,9 @@ main{
 }
 main section{
     background-color: #fffdfa;
-    padding: 1rem;
+    padding: 0.8rem;
     border: 1px solid #d4b483;
-    border-radius: 4px;
+    border-radius: 5px;
 }
 main h2{
     margin-top: 0;
@@ -355,7 +355,7 @@ main h2{
     cursor: pointer;
 }
 .category-tag .edit-btn{
-    color: #0366d6;
+    color: #365d28;
 }
 .category-tag .delete-btn{
     color: #d73a49;
@@ -468,7 +468,7 @@ main h2{
     padding: 3px;
 }
 .category-label .edit-btn{
-    color: #0366d6;
+    color: #365d28;
 }
 .category-label .delete-btn{
     color: #d73a49;
@@ -480,15 +480,33 @@ main h2{
 .add-category-btn{
     display: inline-flex;
     align-items: center;
-    color: #000000;
+    color: #365d28;
+    background-color: #d4b483;
     border-radius: 20px;
     padding: 5px 10px;
     font-size: .9em;
-    font-weight: 600;
-    border: 1px solid #ddd;
+    font-weight: 1000;
+    border: none;
     cursor: default;
     transition: all 0.3s;
 }
 .add-category-btn:hover{
-    background-color: #d3d3d3;
+    opacity: 0.8;
+}
+/* Categories Page styling */
+#back-to-transactions-btn{
+    display: block;
+    margin: 20px auto;
+    padding: 5px 10px;
+    background-color: #365d28;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: .9em;
+    font-weight: bold;
+    cursor: pointer;
+    text-align: center;
+}
+#back-to-transactions-btn:hover{
+    opacity: 0.8;
 }
