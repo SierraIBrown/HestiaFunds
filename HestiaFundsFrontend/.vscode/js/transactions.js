@@ -291,6 +291,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 categoryContainer.appendChild(tag);
             });
+
+            //Add a view/edit categories button
+            const viewEditButton = document.createElement("a");
+            viewEditButton.className = "view-edit-categories-btn";
+            viewEditButton.textContent = "View/Edit Categories";
+            viewEditButton.href = "../html/categories.html";
+            viewEditButton.role = "button";
+
+            categoryContainer.appendChild(viewEditButton);
         }
         catch(error){
             console.error("Error fetching categories:", error);

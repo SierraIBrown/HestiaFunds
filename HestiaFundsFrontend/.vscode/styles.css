@@ -309,7 +309,7 @@ main h2{
     bottom: 8px;
     right: 8px;
     background-color: #d4b483;
-    color: #043910;
+    color: #365d28;
     border: none;
     border-radius: 50%;
     width: 24px;
@@ -401,10 +401,6 @@ main h2{
 #add-transaction-form button:hover{
     background-color: #c49d62;
 }
-#category option[value="editCategories"]{
-    color: #007bff;
-    font-weight: bold;
-}
 .category-tag.selectable{
     cursor: pointer;
     margin: 5px;
@@ -423,6 +419,21 @@ main h2{
     border: 2px solid #000;
 }
 /* Categories Labels */
+.view-edit-categories-btn{
+    cursor: pointer;
+    margin: 5px;
+    padding: 5px 10px;
+    border-radius: 20px;
+    display: inline-block;
+    font-size: 0.9rem;
+    background-color: #365d28;
+    color: #fff;
+    text-align: center;
+    margin: 5px;
+}
+.view-edit-categories-btn:hover{
+    opacity: 0.8;
+}
 .categories-labels{
     display: flex;
     flex-wrap: wrap;
