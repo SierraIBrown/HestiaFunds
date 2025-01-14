@@ -5,8 +5,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const monthYearHeader = document.getElementById("month-year");
     const prevMonthButton = document.getElementById("prev-month");
     const nextMonthButton = document.getElementById("next-month");
-    const transactionForm = document.getElementById("transaction-form");
-    const categorySelect = document.getElementById("category");
 
     let currentDate = new Date();
 
@@ -45,16 +43,50 @@ document.addEventListener("DOMContentLoaded", () => {
             dayBlock.className = "calendar-day";
             dayBlock.innerHTML = `<div class="day-number">${day}</div>`;
 
-            const dayTransactions = transactions.filter(
-                (transaction) => new Date(transaction.date).getDate() === day
-            );
+            const dayTransactions = transactions.filter((transaction) => {
+                const transactionDate = new Date(transaction.date);
+                return(
+                    transactionDate.getUTCFullYear() === year &&
+                    transactionDate.getUTCMonth() === month &&
+                    transactionDate.getUTCDate() === day
+                );
+            });
 
             dayTransactions.forEach((transaction) => {
                 const transactionDiv = document.createElement("div");
-                transactionDiv.className = "transaction";
-                transactionDiv.textContent = `${transaction.amount.toFixed(2)} - ${transaction.category.name}`;
+                transactionDiv.className = "category-tag";
+                transactionDiv.style.backgroundColor = transaction.category.color || "#ddd";
+
+                //Create the transaction price element
+                const transactionAmount = document.createElement("span");
+                transactionAmount.className = "transaction-amount";
+                transactionAmount.textContent = `$${transaction.amount.toFixed(2)}`;
+                transactionDiv.appendChild(transactionAmount);
+
+                //Create the edit button
+                const editButton = document.createElement("button");
+                editButton.className = "edit-btn";
+                editButton.textContent = "Edit";
+                editButton.onclick = () => editTransaction(transaction);
+                transactionDiv.appendChild(editButton);
+
+                //Create the delete button
+                const deleteButton = document.createElement("button");
+                deleteButton.className = "delete-btn";
+                deleteButton.textContent = "Delete";
+                deleteButton.onclick = () => deleteTransaction(transaction.id);
+                transactionDiv.appendChild(deleteButton);
+
                 dayBlock.appendChild(transactionDiv);
             });
+
+
+            //Add the "+" button to each day
+            const addButton = document.createElement("button");
+            addButton.className = "add-transaction-btn";
+            addButton.textContent = "+";
+            addButton.onclick = () => showTransactionForm(day, year, month);
+            dayBlock.appendChild(addButton);
 
             calendarGrid.appendChild(dayBlock);
         }
@@ -64,8 +96,8 @@ document.addEventListener("DOMContentLoaded", () => {
             month: "long",
         })} ${currentDate.getFullYear()}`;
     }
-    
 
+    
     //Handle month navigation
     prevMonthButton.addEventListener("click", () => {
         currentDate.setMonth(currentDate.getMonth() - 1);
@@ -77,38 +109,207 @@ document.addEventListener("DOMContentLoaded", () => {
         fetchTransactionsForMonth(currentDate.getFullYear(), currentDate.getMonth());
     });
 
-    //Fetch categories for the form
-    async function fetchCategories(){
+    //Show transaction form modal
+    function showTransactionForm(day, year, month){
+        showModal(
+            "Add New Transaction",
+            `
+            <form id="modal-transaction-form">
+                <label for="modal-transaction-date">Date:</label>
+                <input type="date" id="modal-transaction-date" value="${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}" readonly required>
+                <label for="modal-transaction-amount">Amount:</label>
+                <input type="number" id="modal-transaction-amount" step="0.01" required>
+                <div id="modal-category-tags-container">
+                    <label for="modal-transaction-category">Category:</label>
+                    <div id="modal-category-tags"></div>
+                </div>
+                <input type="hidden" id="modal-transaction-category" required>
+                <label for="modal-transaction-description">Description:</label>
+                <input type="text" id="modal-transaction-description" required>
+            </form>
+            `,
+            async () => {
+                const date = document.getElementById("modal-transaction-date").value;
+                const amount = parseFloat(document.getElementById("modal-transaction-amount").value);
+                const category = parseInt(document.getElementById("modal-transaction-category").value);
+                const description = document.getElementById("modal-transaction-description").value;
+
+                if(!amount || !category || !description){
+                    showNotification("All fields are required.", "warning");
+                    return;
+                }
+
+                const transaction = { date, amount, category: { id: category }, description };
+
+                try {
+                    const response = await fetch(`${API_BASE_URL}/transactions`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(transaction),
+                    });
+        
+                    if (response.ok) {
+                        showNotification("Transaction added successfully!", "success");
+                        fetchTransactionsForMonth(currentDate.getFullYear(), currentDate.getMonth());
+                    } else {
+                        showNotification("Failed to add transaction.", "error");
+                    }
+                } 
+                catch (error) {
+                    console.error("Error adding transaction:", error);
+                    showNotification("Error adding transaction.", "error");
+                }
+            },
+            "add"
+        );
+
+        fetchCategoriesForTransactionForm("modal-category-tags", "modal-transaction-category");
+    }
+
+    //Edit a transaction
+    async function editTransaction(transaction){
+        showModal(
+            "Edit Transaction",
+            `
+            <form id="edit-transaction-form">
+                <label for="edit-transaction-amount">Amount:</label>
+                <input type="number" id="edit-transaction-amount" value="${transaction.amount}" step="0.01">
+
+                <label for="edit-transaction-amount">Date:</label>
+                <input type="date" id="edit-transaction-date" value="${transaction.date || ""}">
+
+                <label for="edit-transaction-description">Description:</label>
+                <input type="text" id="edit-transaction-description" value="${transaction.description}">
+
+                <div id="edit-category-tags-container">
+                    <label for="edit-transaction-category">Category:</label>
+                    <div id="edit-category-tags"></div>
+                </div>
+                <input type="hidden" id="edit-transaction-category">
+            `,
+            async () => {
+                const updatedAmount = document.getElementById("edit-transaction-amount").value || null;
+                const updatedDate = document.getElementById("edit-transaction-date").value || null;
+                const updatedDescription = document.getElementById("edit-transaction-description").value || null;
+                const updatedCategoryId = document.getElementById("edit-transaction-category").value || null;
+
+                const updatedTransaction = { 
+                    amount: updatedAmount ? parseFloat(updatedAmount) : null, 
+                    date: updatedDate || null,
+                    description: updatedDescription || null,
+                    category: updatedCategoryId ? { id: parseInt(updatedCategoryId) } : null,
+                };
+
+                try{
+                    const response = await fetch(`${API_BASE_URL}/transactions/${transaction.id}`, {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(updatedTransaction),
+                    });
+
+                    if(response.ok){
+                        showNotification("Transaction updated successfully!", "success");
+                        fetchTransactionsForMonth(currentDate.getFullYear(), currentDate.getMonth());
+                    }
+                    else{
+                        showNotification("Failed to update transaction.", "error");
+                    }
+                }
+                catch(error){
+                    console.error("Error updating transaction:", error);
+                    showNotification("Error updating transaction.", "error");
+                }
+            },
+            "edit"
+        );
+
+        fetchCategoriesForTransactionForm("edit-category-tags", "edit-transaction-category");
+    }
+
+    //Delete a transaction
+    async function deleteTransaction(id){
+        showModal(
+            "Delete Transaction",
+            "<p>Are you sure you want to delete this transaction? This action cannot be undone.</p>",
+            async () => {
+                try{
+                    const response = await fetch(`${API_BASE_URL}/transactions/${id}`, {
+                        method: "DELETE",
+                    });
+
+                    if(response.ok){
+                        showNotification("Transaction deleted successfully!", "success");
+                        fetchTransactionsForMonth(currentDate.getFullYear(), currentDate.getMonth());
+                    }
+                    else{
+                        showNotification("Failed to delete transaction.", "error");
+                    }
+                }
+                catch(error){
+                    console.error("Error deleting transcation:", error);
+                    showNotification("Error deleting transaction.", "error");
+                }
+            },
+            "delete"
+        );
+    }
+
+    
+    //Fetch categories for the transaction form
+    async function fetchCategoriesForTransactionForm(containerId, hiddenInputId){
         try{
             const response = await fetch(`${API_BASE_URL}/categories`);
             const categories = await response.json();
 
-            const categorySelect = document.getElementById("category");
-            categorySelect.innerHTML = "";
+            const categoryContainer = document.getElementById(containerId);
+            const hiddenCategoryInput = document.getElementById(hiddenInputId);
+            if(!categoryContainer || !hiddenCategoryInput){
+                console.error(`Container or input element not found: ${containerId}, ${hiddenInputId}`);
+                return;
+            }
 
-            //Add a default option
-            const defaultOption = document.createElement("option");
-            defaultOption.value = "";
-            defaultOption.disabled = true;
-            defaultOption.selected = true;
-            defaultOption.textContent = "Select a category";
-            categorySelect.appendChild(defaultOption);
+            categoryContainer.innerHTML = "";
 
-            //Populate the dropdown with categories
             categories.forEach((category) => {
-                const option = document.createElement("option");
-                option.value = category.id;
-                option.textContent = category.name;
-                categorySelect.appendChild(option);
+                const tag = document.createElement("span");
+                tag.className = "category-tag selectable";
+                tag.textContent = category.name;
+                tag.style.backgroundColor = category.color || "#ddd";
+                tag.dataset.categoryId = category.id;
+
+                tag.addEventListener("click", () => {
+                    document
+                        .querySelectorAll(".category-tag.selectable")
+                        .forEach((el) => el.classList.remove("selected"));
+                    tag.classList.add("selected");
+                    hiddenCategoryInput.value = category.id;
+                });
+
+                categoryContainer.appendChild(tag);
             });
 
-            //Add the Edit/View Categories option
-            const editViewOption = document.createElement("option");
-            editViewOption.value = "editCategories";
-            editViewOption.textContent = "Edit/View Categories...";
-            categorySelect.appendChild(editViewOption);
+            //Add a view/edit categories button
+            const viewEditButton = document.createElement("button");
+            viewEditButton.className = "view-edit-categories-btn";
+            viewEditButton.textContent = "View/Edit Categories";
+            viewEditButton.type = "button";
+            viewEditButton.onclick = () => {
+                const modalState = {
+                    amount: document.getElementById("modal-transaction-amount")?.value || "",
+                    date: document.getElementById("modal-transaction-date")?.value || "",
+                    description: document.getElementById("modal-transaction-description")?.value || "",
+                    category: document.getElementById("modal-transaction-category")?.value || "",
+                };
+                sessionStorage.setItem("modalState", JSON.stringify(modalState));
 
-            showNotification("Categories fetched successfully.", "success");
+                window.location.href = "../html/categories.html";
+            };
+
+            categoryContainer.appendChild(viewEditButton);
         }
         catch(error){
             console.error("Error fetching categories:", error);
@@ -116,163 +317,96 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    //Handle category selection
-    document.getElementById("category").addEventListener("change", (event) => {
-        if(event.target.value === "editCategories"){
-            window.location.href = "categories.html";
-        }
-    });
-
-    async function editTransaction(transaction){
-        try{
-            const response = await fetch(`${API_BASE_URL}/transactions/${transaction.id}`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(transaction),
-            });
-
-            if(response.ok){
-                showNotification("Transaction updated successfully!", "success");
-                fetchTransactionsForMonth();
-            }
-            else{
-                showNotification("Failed to update transaction.", "error");
-            }
-        }
-        catch(error){
-            console.error("Error updating transaction:", error);
-            showNotification("Error updating transaction", "error");
-        }
-    }
-
-    async function deleteTransaction(id){
-        try{
-            const response = await fetch(`${API_BASE_URL}/transactions/${id}`, {
-                method: "DELETE",
-            });
-
-            if(response.ok){
-                showNotification("Transaction deleted successfully!", "success");
-                fetchTransactionsForMonth();
-            }
-            else{
-                showNotification("Failed to delete transaction.", "error");
-            }
-        }
-        catch(error){
-            console.error("Error deleting transaction:", error);
-            showNotification("Error deleting transaction.", "error");
-        }
-    }
-
-    //Handle calendar transaction button clicks
-    document.getElementById("calendar-grid").addEventListener("click", async (event) => {
-        const target = event.target;
-
-        //Edit button
-        if(target.classList.contains("edit-btn")){
-            const id = target.dataset.id;
-            const transactionDiv = target.closest(".transaction");
-
-            const amount = prompt(
-                "Enter new amount:",
-                transactionDiv.dataset.amount
-            );
-            const date = prompt(
-                "Enter new date (YYYY-MM-DD):",
-                transactionDiv.dataset.date
-            );
-            const description = prompt(
-                "Enter new category ID:",
-                transactionDiv.dataset.categoryId
-            );
-
-            if(amount && date && description && categoryId){
-                const updatedTransaction = {
-                    id: id,
-                    amount: parseFloat(amount),
-                    date: date,
-                    description: description,
-                    category: { id: parseInt(categoryId) },
-                };
-
-                await editTransaction(updatedTransaction);
-            }
-            else{
-                showNotification("All fields are required for editing a transaction.", "warning");
-            }
-        }
-
-        //Delete button
-        if(target.classList.contains("delete-btn")){
-            const id = target.dataset.id;
-
-            if(confirm("Are you sure you want to delete this transaction?")){
-                await deleteTransaction(id);
-            }
-        }
-    });
-
-    // Submit a new transaction
-    transactionForm.addEventListener("submit", async (event) => {
-        event.preventDefault();
-
-        const transaction = {
-            amount: parseFloat(document.getElementById("amount").value),
-            date: document.getElementById("date").value,
-            description: document.getElementById("description").value,
-            category: { id: parseInt(document.getElementById("category").value) },
+    //Show a modal
+    function showModal(title, content, onConfirm, type = "info"){
+        //Create the modal overlay
+        const modalOverlay = document.createElement("div");
+        modalOverlay.className = "modal-overlay";
+    
+        //Create the modal container
+        const modal = document.createElement("div");
+        modal.className = "modal ${type}";
+    
+        //Create the modal title
+        const modalTitle = document.createElement("h3");
+        modalTitle.textContent = title;
+        modal.appendChild(modalTitle);
+    
+        //Add the modal content
+        const modalContent = document.createElement("div");
+        modalContent.className = "modal-content";
+        modalContent.innerHTML = content;
+        modal.appendChild(modalContent);
+    
+        //Add action buttons
+        const actions = document.createElement("div");
+        actions.className = "modal-actions";
+    
+        const confirmButton = document.createElement("button");
+        confirmButton.textContent = "Confirm";
+        confirmButton.className = "modal-confirm-btn";
+        confirmButton.onclick = () => {
+            onConfirm();
+            modalOverlay.remove();
         };
+    
+        const cancelButton = document.createElement("button");
+        cancelButton.textContent = "Cancel";
+        cancelButton.className = "modal-cancel-btn";
+        cancelButton.onclick = () => modalOverlay.remove();
+    
+        actions.appendChild(cancelButton);
+        actions.appendChild(confirmButton);
+        modal.appendChild(actions);
+    
+        modalOverlay.appendChild(modal);
+        document.body.appendChild(modalOverlay);
+    }
 
-        try {
-            const response = await fetch(`${API_BASE_URL}/transactions`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(transaction),
-            });
+    //Notification
+    function showNotification(message, type = "success"){
+        const notificationContainer = document.getElementById("notification-container");
+    
+        //Create the notification element
+        const notification = document.createElement("div");
+        notification.className = `notification ${type}`;
+        notification.textContent = message;
+    
+        //Add a close button
+        const closeButton = document.createElement("button");
+        closeButton.innerHTML = "&times;"
+        closeButton.onclick = () => notification.remove();
+        notification.appendChild(closeButton);
+    
+        //Append it to the container
+        notificationContainer.appendChild(notification);
+    
+        //Remove it after 4 seconds
+        setTimeout(() => {
+            notification.remove();
+        }, 4000);
+    }
 
-            if (response.ok) {
-                showNotification("Transaction added successfully!", "success");
-                fetchTransactionsForMonth(currentDate.getFullYear(), currentDate.getMonth());
-                transactionForm.reset();
-            } else {
-                showNotification("Failed to add transaction.", "error");
-            }
-        } catch (error) {
-            console.error("Error adding transaction:", error);
-            showNotification("Error adding transaction.", "error");
+    
+    //Restore modal state if returning from the categories page
+    window.addEventListener("DOMContentLoaded", () => {
+        const modalState = sessionStorage.getItem("modalState");
+        if(modalState){
+            const state = JSON.parse(modalState);
+
+            showTransactionForm(new Date(state.date).getDate(), currentDate.getFullYear(), currentDate.getMonth());
+
+            //Populate the modal with the saved data
+            document.getElementById("modal-transaction-amount").value = state.amount;
+            document.getElementById("modal-transaction-date").value = state.date;
+            document.getElementById("modal-transaction-description").value = state.description;
+            document.getElementById("modal-transaction-category").value = state.category;
+
+            //Clear the session storage to avoid reloading the state unnecessarily
+            sessionStorage.removeItem("modalState");
         }
     });
-
-        //Notification
-        function showNotification(message, type = "success"){
-            const notificationContainer = document.getElementById("notification-container");
-    
-            //Create the notification element
-            const notification = document.createElement("div");
-            notification.className = `notification ${type}`;
-            notification.textContent = message;
-    
-            //Add a close button
-            const closeButton = document.createElement("button");
-            closeButton.innerHTML = "&times;"
-            closeButton.onclick = () => notification.remove();
-            notification.appendChild(closeButton);
-    
-            //Append it to the container
-            notificationContainer.appendChild(notification);
-    
-            //Remove it after 4 seconds
-            setTimeout(() => {
-                notification.remove();
-            }, 4000);
-        }
 
     //Initial fetches
-    fetchCategories();
     fetchTransactionsForMonth(currentDate.getFullYear(), currentDate.getMonth());
 });

@@ -174,6 +174,11 @@ document.addEventListener("DOMContentLoaded", () => {
         categoriesContainer.appendChild(plusButton);
     }
 
+    //Handle back button
+    document.getElementById("back-to-transactions-btn").addEventListener("click", () => {
+        window.location.href = "../html/transactions.html";
+    });
+
     //Show a modal
     function showModal(title, content, onConfirm, type = "info"){
         //Create the modal overlay
