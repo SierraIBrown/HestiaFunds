@@ -6,7 +6,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const prevMonthButton = document.getElementById("prev-month");
     const nextMonthButton = document.getElementById("next-month");
     const transactionForm = document.getElementById("transaction-form");
-    const categorySelect = document.getElementById("category");
 
     let currentDate = new Date();
 
@@ -45,14 +44,32 @@ document.addEventListener("DOMContentLoaded", () => {
             dayBlock.className = "calendar-day";
             dayBlock.innerHTML = `<div class="day-number">${day}</div>`;
 
-            const dayTransactions = transactions.filter(
-                (transaction) => new Date(transaction.date).getDate() === day
-            );
+            const dayTransactions = transactions.filter((transaction) => {
+                const transactionDate = new Date(transaction.date);
+                return(
+                    transactionDate.getUTCFullYear() === year &&
+                    transactionDate.getUTCMonth() === month &&
+                    transactionDate.getUTCDate() === day
+                );
+            });
 
             dayTransactions.forEach((transaction) => {
                 const transactionDiv = document.createElement("div");
                 transactionDiv.className = "transaction";
-                transactionDiv.textContent = `${transaction.amount.toFixed(2)} - ${transaction.category.name}`;
+
+                //Create the category tag
+                const categoryTag = document.createElement("span");
+                categoryTag.className = "category-tag";
+                categoryTag.textContent = transaction.category.name;
+                categoryTag.style.backgroundColor = transaction.category.color || "#ddd";
+
+                //Create the transaction amount element
+                const transactionAmount = document.createElement("span");
+                transactionAmount.classname = "transaction-amount";
+                transactionAmount.textContent = `$${transaction.amount.toFixed(2)}`;
+
+                transactionDiv.appendChild(categoryTag);
+                transactionDiv.appendChild(transactionAmount);
                 dayBlock.appendChild(transactionDiv);
             });
 
