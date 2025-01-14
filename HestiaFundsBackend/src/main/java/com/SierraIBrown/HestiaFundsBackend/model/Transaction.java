@@ -1,5 +1,6 @@
 package com.SierraIBrown.HestiaFundsBackend.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import org.springframework.cglib.core.Local;
 
@@ -22,6 +23,7 @@ public class Transaction {
     /*
     Date of the transaction
      */
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate date;
 
     /*
