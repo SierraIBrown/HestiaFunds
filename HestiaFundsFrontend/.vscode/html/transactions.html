@@ -39,9 +39,9 @@
             <h2>Transactions</h2>
             <section id="calendar">
                 <div id="calendar-header">
-                    <button id="prev-month">&lt;</button>
+                    <button id="prev-month" class="month-nav">&lt;</button>
                     <h3 id="month-year"></h3>
-                    <button id="next-month">&lt;</button>
+                    <button id="next-month" class="month-nav">&gt;</button>
                 </div>
                 <div id="calendar-days">
                     <div class="day-header">Sunday</div>
@@ -53,24 +53,6 @@
                     <div class="day-header">Saturday</div>
                 </div>
                 <div id="calendar-grid"></div>
-            </section>
-
-            <section id="add-transaction-form">
-                <h3>Add a New Transaction</h3>
-                <form id="transaction-form">
-                    <label for="date">Date:</label>
-                    <input type="date" id="date" name="date" required>
-                    <label for="amount">Amount:</label>
-                    <input type="number" id="amount" name="amount" step="0.01" required>
-                    <label for="category">Category:</label>
-                    <select id="category" name="category" required>
-                        <option value="" disabled selected>Select a category</option>
-                    </select>
-                    <a id="edit-view-categories" href="categories.html" style="display: none;">Edit/View Categories</a>
-                    <label for="description">Description:</label>
-                    <input type="text" id="description" name="description" required>
-                    <button type="submit">Add Transaction</button>
-                </form>
             </section>
         </main>
 
