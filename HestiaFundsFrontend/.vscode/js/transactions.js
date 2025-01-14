@@ -54,21 +54,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
             dayTransactions.forEach((transaction) => {
                 const transactionDiv = document.createElement("div");
-                transactionDiv.className = "transaction";
+                transactionDiv.className = "category-tag";
+                transactionDiv.style.backgroundColor = transaction.category.color || "#ddd";
 
-                //Create the category tag
-                const categoryTag = document.createElement("span");
-                categoryTag.className = "category-tag";
-                categoryTag.textContent = transaction.category.name;
-                categoryTag.style.backgroundColor = transaction.category.color || "#ddd";
-
-                //Create the transaction amount element
+                //Create the transaction price element
                 const transactionAmount = document.createElement("span");
                 transactionAmount.className = "transaction-amount";
                 transactionAmount.textContent = `$${transaction.amount.toFixed(2)}`;
-
-                transactionDiv.appendChild(categoryTag);
                 transactionDiv.appendChild(transactionAmount);
+
+                //Create the edit button
+                const editButton = document.createElement("button");
+                editButton.className = "edit-btn";
+                editButton.textContent = "Edit";
+                editButton.onclick = () => editTransaction(transaction);
+                transactionDiv.appendChild(editButton);
+
+                //Create the delete button
+                const deleteButton = document.createElement("button");
+                deleteButton.className = "delete-btn";
+                deleteButton.textContent = "Delete";
+                deleteButton.onclick = () => deleteTransaction(transaction.id);
+                transactionDiv.appendChild(deleteButton);
+
                 dayBlock.appendChild(transactionDiv);
             });
 
@@ -99,10 +107,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 <input type="date" id="modal-transaction-date" value="${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}" readonly required>
                 <label for="modal-transaction-amount">Amount:</label>
                 <input type="number" id="modal-transaction-amount" step="0.01" required>
-                <label for="modal-transaction-category">Category:</label>
-                <select id="modal-transaction-category" required>
-                    <option value="" disabled selected>Select a category</option>
-                </select>
+                <div id="modal-transaction-category-container">
+                    <label for="modal-transaction-category">Category:</label>
+                    <div id="category-tags-container"></div>
+                </div>
+                <input type="hidden" id="modal-transaction-category" required>
                 <label for="modal-transaction-description">Description:</label>
                 <input type="text" id="modal-transaction-description" required>
             </form>
@@ -153,14 +162,26 @@ document.addEventListener("DOMContentLoaded", () => {
             const response = await fetch(`${API_BASE_URL}/categories`);
             const categories = await response.json();
 
-            const categorySelect = document.getElementById("modal-transaction-category");
-            categorySelect.innerHTML = "";
+            const categoryContainer = document.getElementById("category-tags-container");
+            const hiddenCategoryInput = document.getElementById("modal-transaction-category");
+            categoryContainer.innerHTML = "";
 
             categories.forEach((category) => {
-                const option = document.createElement("option");
-                option.value = category.id;
-                option.textContent = category.name;
-                categorySelect.appendChild(option);
+                const tag = document.createElement("span");
+                tag.className = "category-tag selectable";
+                tag.textContent = category.name;
+                tag.style.backgroundColor = category.color || "#ddd";
+                tag.dataset.categoryId = category.id;
+
+                tag.addEventListener("click", () => {
+                    document
+                        .querySelectorAll(".category-tag.selectable")
+                        .forEach((el) => el.classList.remove("selected"));
+                    tag.classList.add("selected");
+                    hiddenCategoryInput.value = category.id;
+                });
+
+                categoryContainer.appendChild(tag);
             });
         }
         catch(error){
