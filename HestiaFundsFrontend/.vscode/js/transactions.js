@@ -97,6 +97,18 @@ document.addEventListener("DOMContentLoaded", () => {
         })} ${currentDate.getFullYear()}`;
     }
 
+    
+    //Handle month navigation
+    prevMonthButton.addEventListener("click", () => {
+        currentDate.setMonth(currentDate.getMonth() - 1);
+        fetchTransactionsForMonth(currentDate.getFullYear(), currentDate.getMonth());
+    });
+
+    nextMonthButton.addEventListener("click", () => {
+        currentDate.setMonth(currentDate.getMonth() + 1);
+        fetchTransactionsForMonth(currentDate.getFullYear(), currentDate.getMonth());
+    });
+
     //Show transaction form modal
     function showTransactionForm(day, year, month){
         showModal(
@@ -189,18 +201,82 @@ document.addEventListener("DOMContentLoaded", () => {
             showNotification("Error fetching categories.", "error");
         }
     }
-    
 
-    //Handle month navigation
-    prevMonthButton.addEventListener("click", () => {
-        currentDate.setMonth(currentDate.getMonth() - 1);
-        fetchTransactionsForMonth(currentDate.getFullYear(), currentDate.getMonth());
-    });
+    //Edit a transaction
+    async function editTransaction(transaction){
+        showModal(
+            "Edit Transaction",
+            `
+            <form id="edit-transaction-form">
+                <label for="edit-transaction-amount">Amount:</label>
+                <input type="number" id="edit-transaction-amount" value="${transaction.amount}" step="0.01" required>
+                <input for"edit-transaction-description">Description:</label>
+                <input type="text" id="edit-transaction-description" value="${transaction.description}" required>
+            `,
+            async () => {
+                const updatedAmount = parseFloat(document.getElementById("edit-transaction-amount").value);
+                const updatedDescription = document.getElementById("edit-transaction-description").value;
 
-    nextMonthButton.addEventListener("click", () => {
-        currentDate.setMonth(currentDate.getMonth() + 1);
-        fetchTransactionsForMonth(currentDate.getFullYear(), currentDate.getMonth());
-    });
+                if(!updatedAmount || !updatedDescription.trim()){
+                    showNotification("All fields are required.", "warning");
+                    return;
+                }
+
+                const updatedTransaction = { ...transaction, amount: updatedAmount, description: updatedDescription };
+
+                try{
+                    const response = await fetch(`${API_BASE_URL}/transactions/${transaction.id}`, {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type:": "application/json",
+                        },
+                        body: JSON.stringify(updatedTransaction),
+                    });
+
+                    if(response.ok){
+                        showNotification("Transaction updated successfully!", "success");
+                        fetchTransactionsForMonth(currentDate.getFullYear(), currentDate.getMonth());
+                    }
+                    else{
+                        showNotification("Failed to update transaction.", "error");
+                    }
+                }
+                catch(error){
+                    console.error("Error updating transaction:", error);
+                    showNotification("Error updating transaction.", "error");
+                }
+            },
+            "edit"
+        );
+    }
+
+    //Delete a transaction
+    async function deleteTransaction(id){
+        showModal(
+            "Delete Transaction",
+            "<p>Are you sure you want to delete this transaction? This action cannot be undone.</p>",
+            async () => {
+                try{
+                    const response = await fetch(`${API_BASE_URL}/transactions/${id}`, {
+                        method: "DELETE",
+                    });
+
+                    if(response.ok){
+                        showNotification("Transaction deleted successfully!", "success");
+                        fetchTransactionsForMonth(currentDate.getFullYear(), currentDate.getMonth());
+                    }
+                    else{
+                        showNotification("Failed to delete transaction.", "error");
+                    }
+                }
+                catch(error){
+                    console.error("Error deleting transcation:", error);
+                    showNotification("Error deleting transaction.", "error");
+                }
+            },
+            "delete"
+        );
+    }
 
     //Show a modal
     function showModal(title, content, onConfirm, type = "info"){

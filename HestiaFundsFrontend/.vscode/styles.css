@@ -294,6 +294,7 @@ main h2{
     border: 1px solid #ddd;
     padding: 8px;
     min-height: 100px;
+    overflow: auto;
 }
 .calendar-day .day-number{
     font-weight: bold;
@@ -325,26 +326,28 @@ main h2{
     background-color: #f9f9f9;
 }
 .category-tag{
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: space-between;
-    padding: 5px;
-    border-radius: 20px;
-    color: white;
-    margin-top: 5px;
+    background-color: #ddd;
+    padding: 2px 5px;
+    border-radius: 12px;
+    font-size: 0.8em;
+    margin-bottom: 3px;
+    white-space: nowrap;
 }
 .transaction-amount{
     margin-right: auto;
     font-weight: bold;
     padding: 0 5px;
+    color: white;
 }
-.edit-btn,
-.delete-btn{
-    border-radius: 20px;
-    margin: 2px;
-    padding: 2px 5px;
-    font-size: .7rem;
-    cursor: pointer;
+.category-tag .edit-btn,
+.category-tag .delete-btn{
+    font-size: 0.7em;
+    padding: 1px 3px;
+    margin-left: 5px;
+    border-radius: 10px;
 }
 .month-nav{
     background: none;
