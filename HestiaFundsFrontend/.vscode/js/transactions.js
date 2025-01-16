@@ -8,7 +8,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let currentDate = new Date();
 
-
     //Fetch transaction for the current month and display them on the calendar
     async function fetchTransactionsForMonth(year, month){
         try{

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8"/>
+        <title>Hestia Funds</title>
+        <link 
+            href="https://fonts.googleapis.com/css2?fmily=Nunito:wght@400;600;700&display=swap"    
+            rel="stylesheet"
+        />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Noto+Serif:wght@400;700&display=swap"
+            rel="stylesheet"
+        />
+        <link rel="stylesheet" href="../styles.css"/>
+        <script src="../js/budgets.js" defer></script>
+    </head>
+    <body>
+        <header>
+            <div class="header-container">
+                <img src="../images/LaurelWreath.png" alt="Laurel Wreath" class="wreath" />
+                <h1 class="ancient-title">Hestia Funds</h1>
+                <h2 class="greek-subtext">Ἑστία</h2>
+            </div>
+        </header>
+
+        <nav id="sidebar">
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="transactions.html">Transactions</a></li>
+                <li><a href="#">Stats</a></li>
+                <li><a href="#">About Me</a></li>
+            </ul>
+        </nav>
+
+        <div id="notification-container"></div>
+
+        <main>
+            <div id="budgets-container">
+                <table>
+                    <thread>
+                        <tr>
+                            <th>Category</th>
+                            <th>Set Budget</th>
+                            <th>Total Spent</th>
+                        </tr>
+                    </thread>
+                    <tbody id="budget-table-body"></tbody>
+                </table>
+            </div>
+            <button id="view-edit-categories">View/Edit Categories</button>
+            <button id="save-budgets">Save Budgets</button>
+        </main>
+
+        <footer>
+            <p>&copy; 2025 Hestia Funds. All rights reserved.</p>
+        </footer>
+    </body>
+</html>
