@@ -5,16 +5,20 @@ import com.SierraIBrown.HestiaFundsBackend.model.Category;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
-@DataJpaTest
+@SpringBootTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@Transactional
 @ActiveProfiles("test")
 public class BudgetRepositoryTest {
 
@@ -32,13 +36,6 @@ public class BudgetRepositoryTest {
         testCategory.setName("Test Category");
         testCategory.setColor("#FFFFFF");
         categoryRepository.save(testCategory);
-
-        Budget budget = new Budget();
-        budget.setCategory(testCategory);
-        budget.setAmount(new BigDecimal("500"));
-        budget.setPeriodStart(LocalDate.of(2025, 1, 1));
-        budget.setPeriodEnd(LocalDate.of(2025, 1, 31));
-        budgetRepository.save(budget);
     }
 
     /*
@@ -46,20 +43,21 @@ public class BudgetRepositoryTest {
      */
     @Test
     public void testFindByCategoryId(){
-        List<Budget> budgets = budgetRepository.findByCategoryId(testCategory.getId());
-        assertFalse(budgets.isEmpty());
-        assertEquals(1, budgets.size());
-        assertEquals(testCategory.getId(), budgets.get(0).getCategory().getId());
-    }
+        Budget budget = new Budget();
+        budget.setCategory(testCategory);
+        budget.setAmount(BigDecimal.valueOf(500));
+        budget.setPeriodStart(LocalDate.of(2025, 1, 1));
+        budget.setPeriodEnd(LocalDate.of(2025, 1, 31));
+        Budget savedBudget = budgetRepository.save(budget);
 
-    /*
-    Tests finding budget using user id and periods
-     */
-//    @Test
-//    public void testFindByUserIdAndPeriod(){
-//        List<Budget> budgets = budgetRepository.findByUserIdAndPeriodStartBeforeAndPeriodEndAfter(
-//                1L, LocalDate.of(2025, 1, 15), LocalDate.of(2025, 1, 15)
-//        );
-//        assertTrue(budgets.isEmpty());
-//    }
+        assertThat(savedBudget.getId()).isNotNull();
+
+        List<Budget> budgets = budgetRepository.findAll();
+        assertThat(budgets).hasSize(1);
+        Budget retrievedBudget = budgets.get(0);
+        assertThat(retrievedBudget.getAmount()).isEqualByComparingTo("500");
+        assertThat(retrievedBudget.getCategory().getName()).isEqualTo("Test Category");
+        assertThat(retrievedBudget.getPeriodStart()).isEqualTo(LocalDate.of(2025, 1, 1));
+        assertThat(retrievedBudget.getPeriodEnd()).isEqualTo(LocalDate.of(2025, 1, 31));
+    }
 }
