@@ -58,7 +58,7 @@ public class BudgetControllerTest {
         budget.setPeriodEnd(LocalDate.of(2025, 1, 31));
         budget = budgetRepository.save(budget);
 
-        mockMvc.perform(get("/api/budgets" + budget.getId()))
+        mockMvc.perform(get("/api/budgets/" + budget.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.amount").value(500));
     }
