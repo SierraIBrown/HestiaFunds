@@ -29,36 +29,86 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    function showAddBudgetModal(){
+        showModal(
+            "Add a Budget",
+            `
+            <form id="modal-budget-form">
+                <div id="modal-category-tags-container">
+                <label for="modal-budget-category">Category:</label>
+                <div id="modal-category-tags"></div>
+                </div>
+                <input type="hidden" id="modal-budget-category" required>
+                <label for="modal-budget-amount">Budget Amount:</label>
+                <input type="number" id="modal-budget-amount" step="0.01" required>
+            </form>
+            `,
+            async() => {
+                const categoryId = parseInt(document.getElementById("modal-budget-category").value);
+                const amount = parseFloat(document.getElementById("modal-budget-amount").value);
+
+                if(!categoryId || !amount){
+                    showNotification("All fields are required.", "warning");
+                    return;
+                }
+
+                const budgetData = {
+                    category: { id: parseInt(categoryId) },
+                    amount,
+                    periodStart: "2025-01-01",
+                    periodEnd: "2025-01-31",
+                };
+
+                try{
+                    const response = await fetch(`${API_BASE_URL}/budgets`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(budgetData),
+                    });
+
+                    if(response.ok){
+                        showNotification("Budget added successfully!", "success");
+                        fetchCategoriesAndBudgets();
+                    }
+                    else{
+                        showNotification("Failed to add budget.", "error");
+                    }
+                }
+                catch(error){
+                    console.error("Error adding budget:", error);
+                    showNotification("Error adding budget.", "error");
+                }
+            },
+            "add"
+        );
+    }
+
+    //Event listener for add button
+    const addBudgetButton = document.getElementById("add-budget");
+    addBudgetButton.addEventListener("click", showAddBudgetModal);
+
     //Populate budgets table
     function populateBudgetsTable(){
         budgetsTableBody.innerHTML = "";
 
-        categories.forEach(category => {
-            const existingBudget = budgets.find(budget => budget.category.id === category.id);
-            
-            const row = document.createElement("tr");
+        budgets
+            .sort((a, b) => a.category.name.localeCompare(b.category.name))
+            .forEach(budget => {
+                const row = document.createElement("tr");
 
-            //Category name
-            const categoryCell = document.createElement("td");
-            categoryCell.textContent = category.name;
-            row.appendChild(categoryCell);
+                //Category tag
+                const categoryCell = document.createElement("td");
+                categoryCell.textContent = budget.category.name;
+                row.appendChild(categoryCell);
 
-            //Budget input
-            const budgetCell = document.createElement("td");
-            const budgetInput = document.createElement("input");
-            budgetInput.type = "number";
-            budgetInput.value = existingBudget ? existingBudget.amount : "";
-            budgetInput.dataset.categoryId = category.id;
-            budgetCell.appendChild(budgetInput);
-            row.appendChild(budgetCell);
+                const budgetCell = document.createElement("td");
+                budgetCell.textContent = `$${budget.amount.toFixed(2)}`;
+                row.appendChild(budgetCell);
 
-            //Total spent
-            const spentCell = document.createElement("td");
-            spentCell.textContent = existingBudget ? "0.00" : "0.00"; //Replace Me
-            row.appendChild(spentCell);
-
-            budgetsTableBody.appendChild(row);
-        });
+                budgetsTableBody.appendChild(row);
+            });
     }
 
     //Save budgets
@@ -93,6 +143,52 @@ document.addEventListener("DOMContentLoaded", () => {
                 console.error("Error saving budgets:", error);
                 showNotification("Error saving budget.", "error");
             }
+    }
+
+    //Show a modal
+    function showModal(title, content, onConfirm, type = "info"){
+        //Create the modal overlay
+        const modalOverlay = document.createElement("div");
+        modalOverlay.className = "modal-overlay";
+        
+        //Create the modal container
+        const modal = document.createElement("div");
+        modal.className = "modal ${type}";
+        
+        //Create the modal title
+        const modalTitle = document.createElement("h3");
+        modalTitle.textContent = title;
+        modal.appendChild(modalTitle);
+        
+        //Add the modal content
+        const modalContent = document.createElement("div");
+        modalContent.className = "modal-content";
+        modalContent.innerHTML = content;
+        modal.appendChild(modalContent);
+        
+        //Add action buttons
+        const actions = document.createElement("div");
+        actions.className = "modal-actions";
+        
+        const confirmButton = document.createElement("button");
+        confirmButton.textContent = "Confirm";
+        confirmButton.className = "modal-confirm-btn";
+        confirmButton.onclick = () => {
+            onConfirm();
+            modalOverlay.remove();
+        };
+        
+        const cancelButton = document.createElement("button");
+        cancelButton.textContent = "Cancel";
+        cancelButton.className = "modal-cancel-btn";
+        cancelButton.onclick = () => modalOverlay.remove();
+        
+        actions.appendChild(cancelButton);
+        actions.appendChild(confirmButton);
+        modal.appendChild(actions);
+    
+        modalOverlay.appendChild(modal);
+        document.body.appendChild(modalOverlay);
     }
 
     //Notification
