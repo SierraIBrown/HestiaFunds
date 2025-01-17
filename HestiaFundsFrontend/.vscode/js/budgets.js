@@ -2,7 +2,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const API_BASE_URL = "http://localhost:8080/api";
 
     const budgetsTableBody = document.getElementById("budget-table-body");
-    const saveBudgetsButton = document.getElementById("save-budgets");
     const viewEditCategoriesButton = document.getElementById("view-edit-categories");
     const backToTransactionsButton = document.getElementById("back-to-transactions");
 
@@ -27,6 +26,28 @@ document.addEventListener("DOMContentLoaded", () => {
             console.error("Error fetching categories or budgets:", error);
             showNotification("Error fetching categories and/or budgets", "error");
         }
+    }
+
+    //Populate budgets table
+    function populateBudgetsTable(){
+        budgetsTableBody.innerHTML = "";
+    
+        budgets
+            .sort((a, b) => a.category.name.localeCompare(b.category.name))
+            .forEach(budget => {
+                const row = document.createElement("tr");
+    
+                //Category tag
+                const categoryCell = document.createElement("td");
+                categoryCell.textContent = budget.category.name;
+                row.appendChild(categoryCell);
+    
+                const budgetCell = document.createElement("td");
+                budgetCell.textContent = `$${budget.amount.toFixed(2)}`;
+                row.appendChild(budgetCell);
+    
+                budgetsTableBody.appendChild(row);
+            });
     }
 
     function showAddBudgetModal(){
@@ -83,66 +104,58 @@ document.addEventListener("DOMContentLoaded", () => {
             },
             "add"
         );
+
+        fetchCategoriesForBudgetForm("modal-category-tags", "modal-budget-category");
     }
 
-    //Event listener for add button
-    const addBudgetButton = document.getElementById("add-budget");
-    addBudgetButton.addEventListener("click", showAddBudgetModal);
+    //Fetch cateogries for the modal
+    async function fetchCategoriesForBudgetForm(containerId, hiddenInputId){
+        const categoryContainer = document.getElementById(containerId);
+        const hiddenCategoryInput = document.getElementById(hiddenInputId);
 
-    //Populate budgets table
-    function populateBudgetsTable(){
-        budgetsTableBody.innerHTML = "";
+        if(!categoryContainer || !hiddenCategoryInput){
+            console.error(`Container or input element not found: ${containerId}, ${hiddenInputId}`);
+            return;
+        }
 
-        budgets
-            .sort((a, b) => a.category.name.localeCompare(b.category.name))
-            .forEach(budget => {
-                const row = document.createElement("tr");
+        categoryContainer.innerHTML = "";
 
-                //Category tag
-                const categoryCell = document.createElement("td");
-                categoryCell.textContent = budget.category.name;
-                row.appendChild(categoryCell);
+        categories.forEach((category) => {
+            const tag = document.createElement("span");
+            tag.className = "category-tag selectable";
+            tag.textContent = category.name;
+            tag.style.backgroundColor = category.color || "#ddd";
+            tag.dataset.categoryId = category.id;
 
-                const budgetCell = document.createElement("td");
-                budgetCell.textContent = `$${budget.amount.toFixed(2)}`;
-                row.appendChild(budgetCell);
-
-                budgetsTableBody.appendChild(row);
+            tag.addEventListener("click", () => {
+                document
+                    .querySelectorAll(".category-tag.selectable")
+                    .forEach((el) => el.classList.remove("selected"));
+                tag.classList.add("selected");
+                hiddenCategoryInput.value = category.id;
             });
-    }
 
-    //Save budgets
-    async function saveBudgets(){
-        const updatedBudgets = Array.from(document.querySelectorAll("input[type='number']"))
-            .filter(input => input.value)
-            .map(input => ({
-                category: { id: parseInt(input.dataset.categoryId) },
-                amount: parseFloat(input.value),
-                periodStart: "2025-01-01", //Replace Me
-                periodEnd: "2025-01-31" //Replace Me
-            }));
+            categoryContainer.appendChild(tag);
+        });
 
-            try{
-                const response = await fetch(`${API_BASE_URL}/budgets`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(updatedBudgets)
-                });
-
-                if(response.ok){
-                    showNotification("Budgets saved successfully!", "success");
-                }
-                else{
-                    console.error("Failed to save budget");
-                    showNotification("Failed to save budget.", "error");
-                }
-            }
-            catch(error){
-                console.error("Error saving budgets:", error);
-                showNotification("Error saving budget.", "error");
-            }
+        //Add a view/edit categories button
+        const viewEditButton = document.createElement("button");
+        viewEditButton.className = "view-edit-categories-btn";
+        viewEditButton.textContent = "View/Edit Categories";
+        viewEditButton.type = "button";
+        viewEditButton.onclick = () => {
+            const modalState = {
+                amount: document.getElementById("modal-transaction-amount")?.value || "",
+                date: document.getElementById("modal-transaction-date")?.value || "",
+                description: document.getElementById("modal-transaction-description")?.value || "",
+                category: document.getElementById("modal-transaction-category")?.value || "",
+            };
+            sessionStorage.setItem("modalState", JSON.stringify(modalState));
+        
+            window.location.href = "../html/categories.html";
+        };
+        
+        categoryContainer.appendChild(viewEditButton);
     }
 
     //Show a modal
@@ -215,15 +228,17 @@ document.addEventListener("DOMContentLoaded", () => {
         }, 4000);
     }
 
-    saveBudgetsButton.addEventListener("click", saveBudgets);
+    //Event listener for add button
+    const addBudgetButton = document.getElementById("add-budget");
+    addBudgetButton.addEventListener("click", showAddBudgetModal);
 
     viewEditCategoriesButton.addEventListener("click", () => {
         window.location.href = "../html/categories.html";
     });
 
-    // backToTransactionsButton.addEventListener("click", () => {
-    //     window.location.href = "../html/transactions.html";
-    // });
+    backToTransactionsButton.addEventListener("click", () => {
+        window.location.href = "../html/transactions.html";
+    });
 
     //Initial fetch
     fetchCategoriesAndBudgets();
