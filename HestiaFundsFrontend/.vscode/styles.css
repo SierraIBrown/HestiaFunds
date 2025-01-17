@@ -1,4 +1,4 @@
-/* Site defaults */
+/* Site Defaults */
 body{
     font-family: "Nunito", sans-serif;
     margin: 0;
@@ -62,7 +62,7 @@ footer{
     width: 100%;
     bottom: 0;
 }
-/* Sidebar styling */
+/* Sidebar Styling */
 #sidebar{
     position: fixed;
     right: 0;
@@ -89,7 +89,7 @@ footer{
 #sidebar ul li a:hover {
     text-decoration: underline;
 }
-/* Notifications */
+/* Notifications Styling */
 #notification-container{
     position: fixed;
     top: 20px;
@@ -164,7 +164,7 @@ footer{
         transform: translateY(-20px);
     }
 }
-/* Modal styling */
+/* Modal Styling */
 .modal-overlay{
     position: fixed;
     top: 0;
@@ -242,7 +242,7 @@ footer{
 .modal.delete{
     border: 2px solid #f44336;
 }
-/* Main content styling */
+/* Main Content Styling */
 main{
     margin-top: 140px;
     margin-right: 200px;
@@ -259,6 +259,7 @@ main h2{
     margin-top: 0;
     color: #3b2f2f;
 }
+/* Transactions Page Styling */
 /* Transactions Calendar */
 #calendar{
     display: flex;
@@ -419,6 +420,23 @@ main h2{
 .category-tag.selectable.selected{
     border: 2px solid #000;
 }
+/* Categories Page Styling */
+#back-to-transactions-btn{
+    display: block;
+    margin: 20px auto;
+    padding: 5px 10px;
+    background-color: #365d28;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: .9em;
+    font-weight: bold;
+    cursor: pointer;
+    text-align: center;
+}
+#back-to-transactions-btn:hover{
+    opacity: 0.8;
+}
 /* Categories Labels */
 .view-edit-categories-btn{
     cursor: pointer;
@@ -494,20 +512,71 @@ main h2{
 .add-category-btn:hover{
     opacity: 0.8;
 }
-/* Categories Page styling */
-#back-to-transactions-btn{
-    display: block;
-    margin: 20px auto;
-    padding: 5px 10px;
+/* Budget Page Styling */
+#budgets-container{
+    margin-top: 20px;
+    text-align: center;
+}
+/* Budget Table Styling */
+.budgets-table{
+    width: 80%;
+    margin: 0 auto;
+    border-collapse: collapse;
+    font-size: 1rem;
+}
+.budgets-table th,
+.budgets-table td{
+    border: 2px solid #d2b48c;
+    padding: 10px;
+    text-align: center;
+}
+.budgets-table th{
+    background-color: #8b0000;
+    color: #fff;
+    font-weight: bold;
+}
+.budgets-table td{
+    background-color: #fffdfa;
+    color: #3b2f2f;
+}
+/* Budgets Button Styling */
+#view-edit-categories,
+#back-to-transactions-btn {
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-weight: bold;
     background-color: #365d28;
     color: #fff;
     border: none;
     border-radius: 5px;
-    font-size: .9em;
-    font-weight: bold;
     cursor: pointer;
-    text-align: center;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
-#back-to-transactions-btn:hover{
-    opacity: 0.8;
+#view-edit-categories:hover,
+#back-to-transactions-btn:hover {
+    background-color: #2b491e;
+    transform: translateY(-2px);
+}
+.buttons-container{
+    display: flex;
+    justify-content: left;
+    gap: 20px;
+    margin-top: 20px;
+}
+.add-budget-btn{
+    background-color: #d4b483;
+    color: #365d28;
+    font-size: 1.5rem;
+    font-weight: bold;
+    width: 200px;
+    height: 50px;
+    border-radius: 20px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease, transfrom 0.2s ease;
+}
+.add-budget-btn:hover{
+    background-color: #c49d62;
+    transform: scale(1.1);
 }
